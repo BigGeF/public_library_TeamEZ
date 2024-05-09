@@ -6,6 +6,7 @@
     <title>Welcome to the Library</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="./styles/styles.css">
 </head>
 <body>
 <include href="views/navbar.html" style="width: 100%; border: none;"></include>
@@ -14,18 +15,7 @@
     <h1 class="text-center mb-4">Welcome to the Library!</h1>
     <div class="row">
         <div class="col-md-6 mx-auto">
-            <!-- Search Form -->
-            <div class="mb-3">
-                <label for="format" class="form-label">Format</label>
-                <select class="form-select" id="format">
-                    <option value="book">Book</option>
-                    <option value="magazine">Magazine</option>
-                </select>
-            </div>
-            <div class="mb-4">
-                <input type="text" class="form-control" placeholder="Search">
-            </div>
-            <!-- Login Form -->
+
             <form>
                 <div class="mb-3">
                     <input type="email" class="form-control" placeholder="Email" name="email">
@@ -36,13 +26,12 @@
                 <div class="d-grid gap-2">
                     <button type="submit" class="btn btn-primary">Login</button>
                     <div class="text-center">OR</div>
-                    <button type="button" class="btn btn-secondary">Sign Up</button>
+                    <a href="signUp.html" class="btn btn-secondary" role="button">Sign Up</a>
                 </div>
             </form>
         </div>
     </div>
 </div>
-
 <!-- Bootstrap Bundle with Popper -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>

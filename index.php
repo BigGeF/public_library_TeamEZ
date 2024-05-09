@@ -21,26 +21,6 @@ $f3->route('GET /', function() {
     echo $view->render('views/home.html');
 });
 
-// Define a search route
-$f3->route('GET /search', function() {
-    // Render a view page
-    $view = new Template();
-    echo $view->render('views/search.html');
-});
-
-// Define a borrows route
-$f3->route('GET /borrows', function() {
-    // Render a view page
-    $view = new Template();
-    echo $view->render('views/borrows.html');
-});
-
-// Define a default route
-$f3->route('GET /sign-up', function() {
-    // Render a view page
-    $view = new Template();
-    echo $view->render('views/signUp.html');
-});
 
 // Run fat free
 $f3->run();
