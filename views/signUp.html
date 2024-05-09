@@ -1,3 +1,12 @@
+<!--
+    This is the sign-up form for our library.
+    It collects name and email.
+
+    Author: Brandon Viorato
+    Date: 5/9/24
+    File: signUp.html
+ -->
+
 <!doctype html>
 <html lang="en">
 <head>
@@ -10,36 +19,41 @@
 
     <!-- CSS -->
     <link rel="stylesheet" href="./styles/styles.css">
-    <title>HTML Template</title>
+    <title>Sign Up</title>
 </head>
 <body>
 <!--this is navbar-->
 <include href="views/navbar.html" style="width: 100%; border: none;"></include>
 <!-- Form -->
 <div class="container">
-    <br>
+    <!-- Form title -->
     <p class="fs-3 d-flex justify-content-center">Sign Up</p>
     <form action="#" method="post" class="row">
         <div class="col-md-3"></div>
         <div class="col-md-6">
             <hr class="mt-0">
             <div class="row g-3">
+                <!-- First Name -->
                 <div class="col-md-6">
                     <label for="firstName" class="form-label">First Name</label>
                     <input type="text" class="form-control" name="firstName" id="firstName" required>
                 </div>
+                <!-- Last Name -->
                 <div class="col-md-6">
                     <label for="lastName" class="form-label">Last Name</label>
                     <input type="text" class="form-control" name="lastName" id="lastName">
                 </div>
+                <!-- Email -->
                 <div class="col-12">
                     <label for="email" class="form-label">Email</label>
                     <input type="email" class="form-control" name="email" id="email" placeholder="you@example.com">
                 </div>
+                <!-- Password -->
                 <div class="col-12">
                     <label for="password" class="form-label">Password</label>
                     <input type="password" class="form-control" name="password" id="password">
                 </div>
+                <!-- Submit -->
                 <div class="col-12">
                     <button type="submit" class="container-fluid btn btn-primary fw-medium">Sign Up</button>
                 </div>
