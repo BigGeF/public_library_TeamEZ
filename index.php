@@ -27,6 +27,29 @@ $f3->route('GET /signUp', function() {
     echo $view->render('views/signUp.html');
 });
 
+// Define a search route
+$f3->route('GET /search', function() {
+    // Render a view page
+    $view = new Template();
+    echo $view->render('views/search.html');
+});
+
+// Define a borrows route
+$f3->route('GET /borrows', function() {
+    // Render a view page
+    $view = new Template();
+    echo $view->render('views/borrows.html');
+});
+
+
+// Define a contact route
+$f3->route('GET /contact', function() {
+    // Render a view page
+    $view = new Template();
+    echo $view->render('views/contact.html');
+});
+
+
 //test
 // Run fat free
 $f3->run();
