@@ -21,6 +21,12 @@ $f3->route('GET /', function() {
     echo $view->render('views/home.html');
 });
 
+$f3->route('GET /signUp', function() {
+    // Render a view page
+    $view = new Template();
+    echo $view->render('views/signUp.html');
+});
 
+//test
 // Run fat free
 $f3->run();
