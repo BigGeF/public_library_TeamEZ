@@ -15,7 +15,39 @@
 <body>
 <!--this is navbar-->
 <include href="views/navbar.html" style="width: 100%; border: none;"></include>
-    <p>Sign up</p>
+<!-- Form -->
+<div class="container">
+    <br>
+    <p class="fs-3 d-flex justify-content-center">Sign Up</p>
+    <form action="#" method="post" class="row">
+        <div class="col-md-3"></div>
+        <div class="col-md-6">
+            <hr class="mt-0">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label for="firstName" class="form-label">First Name</label>
+                    <input type="text" class="form-control" name="firstName" id="firstName" required>
+                </div>
+                <div class="col-md-6">
+                    <label for="lastName" class="form-label">Last Name</label>
+                    <input type="text" class="form-control" name="lastName" id="lastName">
+                </div>
+                <div class="col-12">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" class="form-control" name="email" id="email" placeholder="you@example.com">
+                </div>
+                <div class="col-12">
+                    <label for="password" class="form-label">Password</label>
+                    <input type="password" class="form-control" name="password" id="password">
+                </div>
+                <div class="col-12">
+                    <button type="submit" class="container-fluid btn btn-primary fw-medium">Sign Up</button>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3"></div>
+    </form>
+</div>
 <!-- Required JavaScript -->
 <!-- Popper.js, then Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
