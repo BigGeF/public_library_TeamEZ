@@ -28,7 +28,10 @@ $f3->route('GET /signUp', function() {
 });
 
 // Define a search route
-$f3->route('GET /search', function() {
+$f3->route('GET /search', function($f3) {
+
+    $f3->set('SESSION.searchTitle', 'Search Books');
+
     // Render a view page
     $view = new Template();
     echo $view->render('views/search.html');
