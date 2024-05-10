@@ -29,14 +29,54 @@ $f3->route('GET /signUp', function() {
 });
 
 // Define a search route
-$f3->route('GET /search', function($f3) {
+$f3->route('GET|POST /search', function($f3) {
 
-    $f3->set('SESSION.searchTitle', 'Search Books');
 
-    $data = json_encode(getSearchTestResults());
-    $items = json_decode($data)->items;
+//    // Get Search Dummy Data
+//    $data = json_encode(getSearchTestResults());
+//    $items = json_decode($data)->items;
+//
+//    // Set searchResults data
+//    $f3->set('searchResults', array($items));
 
-    $f3->set('searchResults', array($items));
+
+    // If the form has been posted
+    if ($_SERVER['REQUEST_METHOD'] == "POST") {
+
+        $searchTerm = $_POST['searchTerm'];
+        if (isset($_POST['searchTerm']) && !empty(trim($_POST['searchTerm']))){
+            // create & initialize a curl session
+            $curl = curl_init();
+
+            // set our url with curl_setopt()
+            curl_setopt($curl, CURLOPT_URL, "https://www.googleapis.com/books/v1/volumes?q=" . $searchTerm);
+
+            // return the transfer as a string, also with setopt()
+            curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+
+            // curl_exec() executes the started curl session
+            // $output contains the output string
+            $output = curl_exec($curl);
+            $items = json_decode($output)->items;
+
+            // Set searchResults data
+            $f3->set('searchResults', array($items));
+
+            //var_dump($output);
+
+            // close curl resource to free up system resources
+            // (deletes the variable made by curl_init)
+            curl_close($curl);
+        }
+    }
+
+
+
+
+
+
+
+
 
     // Render a view page
     $view = new Template();
@@ -44,7 +84,15 @@ $f3->route('GET /search', function($f3) {
 });
 
 // Define a borrows route
-$f3->route('GET /borrows', function() {
+$f3->route('GET /borrows', function($f3) {
+
+    // Get Borrows Dummy data
+    $data = json_encode(getMyBorrowsData());
+    $borrows = json_decode($data)->items;
+
+    // Set myBorrows data
+    $f3->set('myBorrows', array($borrows));
+
     // Render a view page
     $view = new Template();
     echo $view->render('views/borrows.html');
