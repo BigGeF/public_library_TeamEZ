@@ -1,3 +1,7 @@
+:root {
+    --font-accent-color: #02729e;
+}
+
 body {
     background-color: #f4f4f9;
     color: #333;
@@ -15,7 +19,34 @@ body {
 .btn-primary, .btn-secondary {
     border-radius: 5px;
 }
+
+
+/*******************************************************************/
+/***************************   NAVBAR   ****************************/
+/*******************************************************************/
+
 .navbar-brand img {
     width: 100px;
     height: auto;
+}
+
+
+/*******************************************************************/
+/**********************   SEARCH RESULTS   *************************/
+/*******************************************************************/
+
+.search-result-item{
+    border-bottom: 1px solid black;
+}
+
+.book-title{
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--font-accent-color);
+}
+.book-author{
+    color: var(--font-accent-color);
+}
+.book-pages{
+
 }

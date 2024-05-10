@@ -9,6 +9,7 @@ error_reporting(E_ALL);
 
 // Require the autoload file
 require_once('vendor/autoload.php');
+require_once ('model/data-layer.php');
 
 // Create an instance of the Base class
 $f3 = Base::instance();
@@ -31,6 +32,11 @@ $f3->route('GET /signUp', function() {
 $f3->route('GET /search', function($f3) {
 
     $f3->set('SESSION.searchTitle', 'Search Books');
+
+    $data = json_encode(getSearchTestResults());
+    $items = json_decode($data)->items;
+
+    $f3->set('searchResults', array($items));
 
     // Render a view page
     $view = new Template();

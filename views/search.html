@@ -1,22 +1,69 @@
 <include href="views/header.html" style="width: 100%; border: none;"></include>
 <body>
-<!--this is navbar-->
-<include href="views/navbar.html" style="width: 100%; border: none;"></include>
+    <!--this is navbar-->
+    <include href="views/navbar.html" style="width: 100%; border: none;"></include>
 
-<div class="container py-5">
-    <h1 class="text-center mb-4">Welcome to the Library!</h1>
-    <div class="row">
-        <div class="col-md-6 mx-auto">
-            <form>
-                <div class="mb-3">
-                    <input type="text" class="form-control" placeholder="Search Term" name="search">
+    <div class="container py-5">
+        <h1 class="text-center mb-4">Welcome to the Library!</h1>
+        <form>
+            <div class="row">
+                <div class="col-sm-4">
+                    <div class="row">
+                        <div class="col-auto">
+                            <div class="mb-3">
+                                <label for="format-select" class="col-form-label">Format</label>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <select id="format-select" class="form-select" aria-label="Book Format Select">
+                                <option selected value="book">Book</option>
+                                <option value="audio-book">Audio Book</option>
+                                <option value="magazine">Magazine</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
-                <div class="d-grid gap-2">
-                    <button type="submit" class="btn btn-primary">Search</button>
+                <div class="col-sm-8">
+                    <div class="row">
+                        <div class="col">
+                            <div class="mb-3">
+                                <input type="text" class="form-control" placeholder="Search Term" name="search">
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <button type="submit" class="btn btn-primary">Search</button>
+                        </div>
+                    </div>
                 </div>
-            </form>
+
+            </div>
+        </form>
+        <div class="search-results">
+            <repeat group="{{ @searchResults[0] }}" value="{{ @result }}">
+                <div class="search-result-item py-4">
+                    <div class="row">
+                        <div class="col-auto">
+                            <img src="{{@result->volumeInfo->imageLinks->thumbnail}}">
+                        </div>
+                        <div class="col">
+                            <div class="d-flex flex-column gap-1">
+                                <span class="book-title">{{ @result->volumeInfo->title }}</span>
+                                <span>by <span class="book-author">{{  implode(", ", @result->volumeInfo->authors)}}</span></span>
+                                <span><span class="book-pages">{{ @result->volumeInfo->pageCount }}</span> pages</span>
+                            </div>
+
+                        </div>
+                        <div class="col-auto mt-auto">
+                            <div class="d-flex flex-column gap-1">
+                                <button class="btn btn-primary" >Check Out</button>
+                                <button class="btn btn-danger" >Put On Hold</button>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </repeat>
         </div>
     </div>
-</div>
 </body>
 </html>
