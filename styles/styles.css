@@ -13,10 +13,7 @@ body {
     padding: 20px;
     border-radius: 8px ;
 }
-.form-control, .form-select {
-    border-radius: 5px;
-    border: 1px solid #ccc;
-}
+
 .btn-primary, .btn-secondary {
     border-radius: 5px;
 }
@@ -61,6 +58,7 @@ body {
 /*******************************************************************/
 .form-control, .form-select{
     border-radius: 0;
+    border: 1px solid #ccc;
 }
 
 .btn {
