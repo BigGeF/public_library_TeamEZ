@@ -1,7 +1,17 @@
-<include href="views/header.html" style="width: 100%; border: none;" with="title=Search Catalog"></include>
+<!--
+    This page lets users search for a book using Google Books API
+    Books can be checked out from the library
+
+    Author: Matt Miss
+    Date: 5/8/24
+    File: search.html
+ -->
+
+<!--Header-->
+<include href="views/header.html" with="title=Search Catalog"></include>
 <body>
-    <!--this is navbar-->
-    <include href="views/navbar.html" style="width: 100%; border: none;" with="active=search"></include>
+    <!--Navbar-->
+    <include href="views/navbar.html" with="active=search"></include>
 
     <div class="container py-5">
         <h1 class="text-center mb-4">Search our Catalog</h1>
@@ -38,6 +48,7 @@
 
             </div>
         </form>
+        <!-- Book Search Results-->
         <div class="search-results">
             <repeat group="{{ @searchResults[0] }}" value="{{ @result }}">
                 <div class="search-result-item p-4">

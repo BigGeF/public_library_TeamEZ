@@ -22,6 +22,7 @@ $f3->route('GET /', function() {
     echo $view->render('views/home.html');
 });
 
+// Define a signUp route
 $f3->route('GET /signUp', function() {
     // Render a view page
     $view = new Template();
@@ -30,15 +31,6 @@ $f3->route('GET /signUp', function() {
 
 // Define a search route
 $f3->route('GET|POST /search', function($f3) {
-
-
-//    // Get Search Dummy Data
-//    $data = json_encode(getSearchTestResults());
-//    $items = json_decode($data)->items;
-//
-//    // Set searchResults data
-//    $f3->set('searchResults', array($items));
-
 
     // If the form has been posted
     if ($_SERVER['REQUEST_METHOD'] == "POST") {
@@ -57,14 +49,6 @@ $f3->route('GET|POST /search', function($f3) {
             $f3->set('searchResults', array($items));
         }
     }
-
-
-
-
-
-
-
-
 
     // Render a view page
     $view = new Template();
