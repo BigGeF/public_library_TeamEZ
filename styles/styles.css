@@ -1,16 +1,17 @@
 :root {
     --font-accent-color: #02729e;
+    --result-border-color: #ccc;
 }
-
 body {
     background-color: #f4f4f9;
+    font-family: "Open San", Arial, sans-serif;
     color: #333;
 }
 .container {
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    background-color: white;
+    /*box-shadow: 0 4px 8px rgba(0,0,0,0.1);*/
+    /*background-color: white;*/
     padding: 20px;
-    border-radius: 8px;
+    border-radius: 8px ;
 }
 .form-control, .form-select {
     border-radius: 5px;
@@ -25,18 +26,60 @@ body {
 /***************************   NAVBAR   ****************************/
 /*******************************************************************/
 
+.navbar{
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.navbar-collapse{
+    height: 100%;
+}
+
+.navbar-nav{
+    height: 100%;
+}
+
 .navbar-brand img {
     width: 100px;
     height: auto;
 }
 
+.nav-link{
+    font-size: 1.4rem;
+}
+
+.nav-link.active{
+    color: var(--font-accent-color) !important;
+}
+
+.nav-link:hover{
+    color: var(--font-accent-color);
+    height: 100%;
+}
+
+/*******************************************************************/
+/***************************   FORMS   ****************************/
+/*******************************************************************/
+.form-control, .form-select{
+    border-radius: 0;
+}
+
+.btn {
+    border-radius: 0;
+}
 
 /*******************************************************************/
 /**********************   SEARCH RESULTS   *************************/
 /*******************************************************************/
 
 .search-result-item{
-    border-bottom: 1px solid black;
+    border-bottom: 1px solid var(--result-border-color);
+    border-left: 1px solid var(--result-border-color);
+    border-right: 1px solid var(--result-border-color);
+    background-color: white;
+}
+
+.search-result-item:nth-of-type(1){
+    border-top: 1px solid var(--result-border-color);
 }
 
 .book-title{

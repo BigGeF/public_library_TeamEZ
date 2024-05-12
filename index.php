@@ -43,30 +43,18 @@ $f3->route('GET|POST /search', function($f3) {
     // If the form has been posted
     if ($_SERVER['REQUEST_METHOD'] == "POST") {
 
-        $searchTerm = $_POST['searchTerm'];
+        // Get the type of book
+        $printType = $_POST['type'];
+
+        // Get User Input Search Term
+        $searchTerm = trim($_POST['searchTerm']);
         if (isset($_POST['searchTerm']) && !empty(trim($_POST['searchTerm']))){
-            // create & initialize a curl session
-            $curl = curl_init();
 
-            // set our url with curl_setopt()
-            curl_setopt($curl, CURLOPT_URL, "https://www.googleapis.com/books/v1/volumes?q=" . $searchTerm);
-
-            // return the transfer as a string, also with setopt()
-            curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-
-            // curl_exec() executes the started curl session
-            // $output contains the output string
-            $output = curl_exec($curl);
-            $items = json_decode($output)->items;
+            // Get the search results using curl
+            $items = getSearchResultsCurl($searchTerm, $printType)->items;
 
             // Set searchResults data
             $f3->set('searchResults', array($items));
-
-            //var_dump($output);
-
-            // close curl resource to free up system resources
-            // (deletes the variable made by curl_init)
-            curl_close($curl);
         }
     }
 

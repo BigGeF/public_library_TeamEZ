@@ -1,37 +1,37 @@
 <include href="views/header.html" style="width: 100%; border: none;" with="title=Search Catalog"></include>
 <body>
     <!--this is navbar-->
-    <include href="views/navbar.html" style="width: 100%; border: none;"></include>
+    <include href="views/navbar.html" style="width: 100%; border: none;" with="active=search"></include>
 
     <div class="container py-5">
-        <h1 class="text-center mb-4">Welcome to the Library!</h1>
-        <form action="#" method="POST">
+        <h1 class="text-center mb-4">Search our Catalog</h1>
+        <form action="#" method="POST" class="pt-4">
             <div class="row">
                 <div class="col-sm-4">
                     <div class="row">
                         <div class="col-auto">
                             <div class="mb-3">
-                                <label for="format-select" class="col-form-label">Format</label>
+                                <label for="type" class="col-form-label">Format</label>
                             </div>
                         </div>
                         <div class="col">
-                            <select id="format-select" class="form-select" aria-label="Book Format Select">
-                                <option selected value="book">Book</option>
-                                <option value="audio-book">Audio Book</option>
-                                <option value="magazine">Magazine</option>
+                            <select id="type" name="type" class="form-select" aria-label="Book Format Select">
+                                <option selected value="all">All</option>
+                                <option value="books">Book</option>
+                                <option value="magazines">Magazine</option>
                             </select>
                         </div>
                     </div>
                 </div>
                 <div class="col-sm-8">
                     <div class="row">
-                        <div class="col">
+                        <div class="col pe-0">
                             <div class="mb-3">
-                                <input type="text" class="form-control" placeholder="Search Term" name="searchTerm">
+                                <input type="text" class="form-control" placeholder="Enter Search Term" name="searchTerm">
                             </div>
                         </div>
-                        <div class="col-auto">
-                            <button type="submit" class="btn btn-primary">Search</button>
+                        <div class="col-auto ps-0">
+                            <button type="submit" class="btn btn-primary "><i class="fa-solid fa-magnifying-glass px-2"></i></button>
                         </div>
                     </div>
                 </div>
@@ -40,7 +40,7 @@
         </form>
         <div class="search-results">
             <repeat group="{{ @searchResults[0] }}" value="{{ @result }}">
-                <div class="search-result-item py-4">
+                <div class="search-result-item p-4">
                     <div class="row">
                         <div class="col-auto">
                             <img src="{{@result->volumeInfo->imageLinks->thumbnail}}">
