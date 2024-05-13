@@ -57,7 +57,6 @@ $f3->route('GET|POST /search', function($f3) {
 
 // Define a borrows route
 $f3->route('GET /borrows', function($f3) {
-
     // Get Borrows Dummy data
     $data = json_encode(getMyBorrowsData());
     $borrows = json_decode($data)->items;
@@ -78,6 +77,11 @@ $f3->route('GET /contact', function() {
     echo $view->render('views/contact.html');
 });
 
+$f3->route('GET /login', function() {
+    // Render a view page
+    $view = new Template();
+    echo $view->render('views/login.html');
+});
 
 //test
 // Run fat free

@@ -3,13 +3,13 @@
     --result-border-color: #ccc;
 }
 body {
-    background: linear-gradient(to bottom, lightblue, #ffffff);
     /*background-image: url('./img/background.jpg');*/
 
     font-family: "Open San", Arial, sans-serif;
     color: #333;
 }
 .container {
+
     /*box-shadow: 0 4px 8px rgba(0,0,0,0.1);*/
     /*background-color: white;*/
 
@@ -92,4 +92,15 @@ body {
 }
 .book-description{
 
+}
+
+
+/*******************************************************************/
+/***************************   Front Page   ****************************/
+/*******************************************************************/
+.libraryEntrance {
+    width: 100%;     /* Make the image responsive to the container width */
+    height: auto;    /* Maintain the aspect ratio */
+    border-radius: 10px;  /* Optional: adds rounded corners to the image */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Optional: adds a shadow effect */
 }
