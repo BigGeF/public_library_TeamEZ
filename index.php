@@ -9,78 +9,55 @@ error_reporting(E_ALL);
 
 // Require the autoload file
 require_once('vendor/autoload.php');
-require_once ('model/data-layer.php');
+//require_once ('model/data-layer.php');
 
 // Create an instance of the Base class
 $f3 = Base::instance();
+$con = new Controller($f3);
 
+/*// Test Item
+$params = array("id"=>1, "title"=>"Dune", "desc"=>"Dune description", "pubDate"=>"1/2/88", "available"=>false,
+    "borrowDate"=>"5/4/24", "returnDate"=>"5/21/24", "borrower"=>2, "holds"=>array(2, 4, 5));
+
+$book = new Book($params);
+$book->checkOut(3);
+$book->extendDueDate(10);
+//var_dump($book);*/
 
 // Define a default route
 $f3->route('GET /', function() {
-    // Render a view page
-    $view = new Template();
-    echo $view->render('views/home.html');
+    // Render Home Page
+    $GLOBALS['con']->home();
 });
 
 // Define a signUp route
 $f3->route('GET /signUp', function() {
-    // Render a view page
-    $view = new Template();
-    echo $view->render('views/signUp.html');
+    // Render SignUp Page
+    $GLOBALS['con']->signUp();
 });
 
 // Define a search route
-$f3->route('GET|POST /search', function($f3) {
-
-    // If the form has been posted
-    if ($_SERVER['REQUEST_METHOD'] == "POST") {
-
-        // Get the type of book
-        $printType = $_POST['type'];
-
-        // Get User Input Search Term
-        $searchTerm = trim($_POST['searchTerm']);
-        if (isset($_POST['searchTerm']) && !empty(trim($_POST['searchTerm']))){
-
-            // Get the search results using curl
-            $items = getSearchResultsCurl($searchTerm, $printType)->items;
-
-            // Set searchResults data
-            $f3->set('searchResults', array($items));
-        }
-    }
-
-    // Render a view page
-    $view = new Template();
-    echo $view->render('views/search.html');
+$f3->route('GET|POST /search', function() {
+    // Render Search Page
+    $GLOBALS['con']->search();
 });
 
 // Define a borrows route
-$f3->route('GET /borrows', function($f3) {
-    // Get Borrows Dummy data
-    $data = json_encode(getMyBorrowsData());
-    $borrows = json_decode($data)->items;
-
-    // Set myBorrows data
-    $f3->set('myBorrows', array($borrows));
-
-    // Render a view page
-    $view = new Template();
-    echo $view->render('views/borrows.html');
+$f3->route('GET /borrows', function() {
+    // Render a borrows page
+    $GLOBALS['con']->borrows();
 });
 
 
 // Define a contact route
 $f3->route('GET /contact', function() {
-    // Render a view page
-    $view = new Template();
-    echo $view->render('views/contact.html');
+    // Render a contact page
+    $GLOBALS['con']->contact();
 });
 
 $f3->route('GET /login', function() {
-    // Render a view page
-    $view = new Template();
-    echo $view->render('views/login.html');
+    // Render a login page
+    $GLOBALS['con']->logIn();
 });
 
 //test
