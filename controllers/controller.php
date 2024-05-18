@@ -38,8 +38,51 @@ class Controller
                 // Get the search results using curl
                 $items = DataLayer::getSearchResultsCurl($searchTerm, $printType)->items;
 
+                // Create an array to hold Item objects
+                $itemObjects = array();
+
+                // Go through each item from the search results
+                foreach ($items as $item){
+
+                    // Set general Item params
+                    $itemParams = array();
+                    $itemParams['id'] = 1;
+                    $itemParams['title'] = $item->volumeInfo->title;
+                    $itemParams['desc'] = $item->volumeInfo->description;
+                    $itemParams['pubDate'] = $item->volumeInfo->publishedDate;
+                    $secondaryParams = array();
+
+                    // Create either a Book object or a Magazine object and add to the itemObject array
+                    if ($item->volumeInfo->printType == "BOOK"){
+                        // Set Book params
+                        $secondaryParams["authors"] = $item->volumeInfo->authors;
+                        $secondaryParams["pages"] = $item->volumeInfo->pageCount;
+                        $secondaryParams["isbn"] = $item->volumeInfo->industryIdentifiers[0]->identifier;
+                        $secondaryParams["cover"] = $item->volumeInfo->imageLinks->thumbnail;
+
+                        // Create a Book from all params
+                        $book = new Book($itemParams, $secondaryParams);
+                        $itemObjects[] = $book;
+
+                    }else if($item->volumeInfo->printType == "MAGAZINE"){
+                        // Set Magazine params
+                        $secondaryParams["pages"] = $item->volumeInfo->pageCount;
+                        $secondaryParams["cover"] = $item->volumeInfo->imageLinks->thumbnail;
+
+                        // Create a Magazine from all params
+                        $magazine = new Magazine($itemParams, $secondaryParams);
+                        $itemObjects[] = $magazine;
+                    }
+                }
+
+                /*echo "<pre>";
+                foreach ($itemObjects as $itemObj){
+                    var_dump($itemObj);
+                }
+                echo "</pre>";*/
+
                 // Set searchResults data
-                $this->_f3->set('searchResults', array($items));
+                $this->_f3->set('searchResults', $itemObjects);
             }
         }
 

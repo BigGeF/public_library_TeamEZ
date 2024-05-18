@@ -3,35 +3,35 @@
 
 class Book extends Item
 {
-    private $_author;
+    private $_authors;
     private $_pages;
     private $_isbn;
     private $_cover;
 
-    public function __construct($params, $author, $pages, $isbn, $cover)
+    public function __construct($itemParams,$bookParams)
     {
-        parent::__construct($params);
+        parent::__construct($itemParams);
 
-        $this->_author = $author;
-        $this->_pages = $pages;
-        $this->_isbn = $isbn;
-        $this->_cover = $cover;
+        $this->_authors = $bookParams["authors"];
+        $this->_pages = $bookParams["pages"];
+        $this->_isbn = $bookParams["isbn"];
+        $this->_cover = $bookParams["cover"];
     }
 
     /**
-     * @return String The name of the author
+     * @return String The name of the authors
      */
-    public function getAuthor()
+    public function getAuthors()
     {
-        return $this->_author;
+        return $this->_authors;
     }
 
     /**
-     * @param String $author
+     * @param String $authors
      */
-    public function setAuthor($author)
+    public function setAuthors($authors)
     {
-        $this->_author = $author;
+        $this->_authors = $authors;
     }
 
     /**

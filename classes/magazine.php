@@ -5,12 +5,12 @@ class Magazine extends Item
     private $_pages;
     private $_cover;
 
-    public function __construct($params, $pages, $cover)
+    public function __construct($itemParams, $magazineParams)
     {
-        parent::__construct($params);
+        parent::__construct($itemParams);
 
-        $this->_pages = $pages;
-        $this->_cover = $cover;
+        $this->_pages = $magazineParams["pages"];
+        $this->_cover = $magazineParams["cover"];
     }
 
     /**

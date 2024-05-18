@@ -50,37 +50,62 @@
         </form>
         <!-- Book Search Results-->
         <div class="search-results">
-            <repeat group="{{ @searchResults[0] }}" value="{{ @result }}">
-                <div class="search-result-item p-4">
-                    <div class="row">
-                        <div class="col-auto">
-                            <img src="{{@result->volumeInfo->imageLinks->thumbnail}}">
-                        </div>
-                        <div class="col">
-                            <div class="d-flex flex-column gap-1">
-                                <span class="book-title">{{ @result->volumeInfo->title }}</span>
-                                <check if ="{{@result->volumeInfo->authors}}">
-                                    <true>
-                                        <span>by <span class="book-author">{{  implode(", ", @result->volumeInfo->authors)}}</span></span>
-                                    </true>
-                                    <false>
-                                        Author not found
-                                    </false>
-                                </check>
-                                <span><span class="book-pages">{{ @result->volumeInfo->pageCount }}</span> pages</span>
-                                <span class="book-description">{{ @result->volumeInfo->description }}</span>
+            <repeat group="{{ @searchResults }}" value="{{ @result }}">
+                <check if="{{get_class(@result) == 'Book'}}">
+                    <div class="search-result-item p-4">
+                        <div class="row">
+                            <div class="col-auto">
+                                <img src="{{@result->getCover()}}">
                             </div>
+                            <div class="col">
+                                <div class="d-flex flex-column gap-1">
+                                    <span class="book-title">{{ @result->volumeInfo->title }}</span>
+                                    <check if ="{{@result->getAuthors()}}">
+                                        <true>
+                                            <span>by <span class="book-author">{{  implode(", ", @result->getAuthors())}}</span></span>
+                                        </true>
+                                        <false>
+                                            Author not found
+                                        </false>
+                                    </check>
+                                    <span><span class="book-pages">{{ @result->getPages() }}</span> pages</span>
+                                    <span class="book-description">{{ @result->getDescription() }}</span>
+                                </div>
 
-                        </div>
-                        <div class="col-auto mt-auto">
-                            <div class="d-flex flex-column gap-1">
-                                <button class="btn btn-primary" >Check Out</button>
-                                <button class="btn btn-danger" >Put On Hold</button>
                             </div>
+                            <div class="col-auto mt-auto">
+                                <div class="d-flex flex-column gap-1">
+                                    <button class="btn btn-primary" >Check Out</button>
+                                    <button class="btn btn-danger" >Put On Hold</button>
+                                </div>
 
+                            </div>
                         </div>
                     </div>
-                </div>
+                </check>
+                <check if="{{get_class(@result) == 'Magazine'}}">
+                    <div class="search-result-item p-4">
+                        <div class="row">
+                            <div class="col-auto">
+                                <img src="{{@result->getCover()}}">
+                            </div>
+                            <div class="col">
+                                <div class="d-flex flex-column gap-1">
+                                    <span class="book-title">{{ @result->volumeInfo->title }}</span>
+                                    <span><span class="book-pages">{{ @result->getPages() }}</span> pages</span>
+                                    <span class="book-description">{{ @result->getDescription() }}</span>
+                                </div>
+
+                            </div>
+                            <div class="col-auto mt-auto">
+                                <div class="d-flex flex-column gap-1">
+                                    <button class="btn btn-primary" >Check Out</button>
+                                    <button class="btn btn-danger" >Put On Hold</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </check>
             </repeat>
         </div>
     </div>
