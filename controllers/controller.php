@@ -1,12 +1,15 @@
 <?php
+//get the database.php
 
+require_once "database.php";
 class Controller
 {
     private $_f3;   // Fat-Free Router
-
+    private $dbh;
     function __construct($f3)
     {
         $this->_f3 = $f3;
+        $this->dbh = Database::getConnection();
     }
 
     function home()
@@ -15,6 +18,7 @@ class Controller
         $view = new Template();
         echo $view->render('views/home.html');
     }
+
 
     function signUp()
     {
@@ -117,5 +121,20 @@ class Controller
         // Render a login page
         $view = new Template();
         echo $view->render('views/login.html');
+    }
+    //get all users and show at admin.html page
+    function adminGetUsers(){
+        //get all users data
+        $sql = "SELECT * FROM users";
+        $statement = $this->dbh->prepare($sql);
+        $statement->execute();
+        $users = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        //save the users into f3's "hive"
+        $this->_f3->set('users', $users);
+
+        //render the admin page
+        $view = new Template();
+        echo $view->render('views/admin.html');
     }
 }

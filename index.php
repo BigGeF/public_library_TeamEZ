@@ -60,6 +60,12 @@ $f3->route('GET /login', function() {
     $GLOBALS['con']->logIn();
 });
 
+
+//for admin page
+//define an admin route
+$f3->route("GET /admin", function (){
+    $GLOBALS['con']->adminGetUsers();
+});
 //test
 // Run fat free
 $f3->run();
