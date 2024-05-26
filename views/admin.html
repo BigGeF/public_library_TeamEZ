@@ -2,32 +2,46 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>admin</title>
+    <title>Admin - All Users</title>
+    <!-- 引入 Bootstrap CSS 文件 -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-    <h1>All users</h1>
-    <table border ="1">
+<!--Header-->
+<include href="views/header.html" with="title=Admin - All Users"></include>
+<include href="views/navbar.html" with="active=admin"></include>
+
+<div class="container py-5">
+    <h1 class="text-center mb-4">All Users</h1>
+    <table class="table table-striped">
         <thead>
-            <tr>
-                <th>ID</th>
-                <th>First Name</th>
-                <th>Last Name</th>
-                <th>Email</th>
-            </tr>
+        <tr>
+            <th>ID</th>
+            <th>Role</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Email</th>
+        </tr>
         </thead>
         <tbody>
-            <repeat group="{{@users}}" value = "{{@user}}">
-                <tr>
-                    <td>{{@user.id}}</td>
-                    <td>{{ @user.first }}</td>
-                    <td>{{ @user.last }}</td>
-                    <td>{{ @user.email }}</td>
-                </tr>
-            </repeat>
+        <repeat group="{{ @users }}" value="{{ @user }}">
+            <tr>
+                <td>{{ @user.id }}</td>
+                <td>{{ @user.role }}</td>
+                <td>{{ @user.first }}</td>
+                <td>{{ @user.last }}</td>
+                <td>{{ @user.email }}</td>
+            </tr>
+        </repeat>
         </tbody>
     </table>
+</div>
+
+<!-- 引入 Bootstrap JS 文件 -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

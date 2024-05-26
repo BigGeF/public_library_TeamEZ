@@ -14,6 +14,7 @@ require_once('vendor/autoload.php');
 // Create an instance of the Base class
 $f3 = Base::instance();
 $con = new Controller($f3);
+$emailCon = new EmailController($f3);
 
 /*// Test Item
 $params = array("id"=>1, "title"=>"Dune", "desc"=>"Dune description", "pubDate"=>"1/2/88", "available"=>false,
@@ -49,10 +50,10 @@ $f3->route('GET /borrows', function() {
 });
 
 
-// Define a contact route
-$f3->route('GET /contact', function() {
-    // Render a contact page
-    $GLOBALS['con']->contact();
+// Define a contact route,
+$f3->route('GET|POST /contact', function() {
+    // Get contact function from controller
+    $GLOBALS['emailCon']->contact();
 });
 
 $f3->route('GET /login', function() {
@@ -66,6 +67,8 @@ $f3->route('GET /login', function() {
 $f3->route("GET /admin", function (){
     $GLOBALS['con']->adminGetUsers();
 });
+
+
 //test
 // Run fat free
 $f3->run();

@@ -10,11 +10,10 @@
 <!--Header-->
 <include href="views/header.html" with="title=My Borrows"></include>
 <body>
-<include href="views/navbar.html" with="active=borrows"><a/include>
+<include href="views/navbar.html" with="active=borrows"></include>
 
     <div class="container py-5">
         <h1 class="text-center mb-4">My Borrows</h1>
-
         <div class="search-results">
             <repeat group="{{ @myBorrows[0] }}" value="{{ @result }}">
                 <div class="search-result-item p-4">

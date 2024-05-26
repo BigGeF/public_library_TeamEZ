@@ -109,12 +109,7 @@ class Controller
         echo $view->render('views/borrows.html');
     }
 
-    function contact()
-    {
-        // Render a contact page
-        $view = new Template();
-        echo $view->render('views/contact.html');
-    }
+
 
     function logIn()
     {

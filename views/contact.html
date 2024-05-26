@@ -18,6 +18,14 @@
 <div class="container">
     <!-- Form title -->
     <p class="fs-3 d-flex justify-content-center">Contact</p>
+
+    <!-- 显示提交结果消息 -->
+    <check if="{{ @message }}">
+        <div class="alert alert-info text-center">
+            {{ @message }}
+        </div>
+    </check>
+
     <form action="#" method="post" class="row">
         <div class="col-md-3"></div>
         <div class="col-md-6">
