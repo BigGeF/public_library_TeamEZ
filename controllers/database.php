@@ -1,3 +1,10 @@
+<!--
+    This PHP file handles database connection and related operations.
+
+    Author: Hao Fan
+    Date: 5/26/24
+    File: database.html
+ -->
 <?php
 
 class Database
