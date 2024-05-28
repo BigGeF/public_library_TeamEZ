@@ -15,15 +15,7 @@ require_once('vendor/autoload.php');
 $f3 = Base::instance();
 $con = new Controller($f3);
 $emailCon = new EmailController($f3);
-
-/*// Test Item
-$params = array("id"=>1, "title"=>"Dune", "desc"=>"Dune description", "pubDate"=>"1/2/88", "available"=>false,
-    "borrowDate"=>"5/4/24", "returnDate"=>"5/21/24", "borrower"=>2, "holds"=>array(2, 4, 5));
-
-$book = new Book($params);
-$book->checkOut(3);
-$book->extendDueDate(10);
-//var_dump($book);*/
+$donateCon = new DonationController($f3);
 
 // Define a default route
 $f3->route('GET /', function() {
@@ -49,8 +41,7 @@ $f3->route('GET /borrows', function() {
     $GLOBALS['con']->borrows();
 });
 
-
-// Define a contact route,
+// Define a contact route
 $f3->route('GET|POST /contact', function() {
     // Get contact function from controller
     $GLOBALS['emailCon']->contact();
@@ -61,14 +52,37 @@ $f3->route('GET /login', function() {
     $GLOBALS['con']->logIn();
 });
 
-
-//for admin page
-//define an admin route
-$f3->route("GET /admin", function (){
+// Define an admin route
+$f3->route('GET /admin', function() {
     $GLOBALS['con']->adminGetUsers();
 });
 
+// Define a route for the donation page
+$f3->route('GET|POST /donate', function() {
+    // Render a donation page
+    $GLOBALS['donateCon']->donate();
+});
 
-//test
+// Define a route for creating the Checkout Session
+//$f3->route(' /create-checkout-session', function() {
+//    // Create Checkout Session
+//    $GLOBALS['donateCon']->donate();
+//});
+
+// Define a route for success page
+$f3->route('GET /success', function() {
+    // Render success page
+    $view = new Template();
+    echo $view->render('views/success.html');
+});
+
+// Define a route for cancel page
+$f3->route('GET /cancel', function() {
+    // Render cancel page
+    $view = new Template();
+    echo $view->render('views/cancel.html');
+});
+
 // Run fat free
 $f3->run();
+

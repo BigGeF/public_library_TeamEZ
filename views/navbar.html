@@ -2,7 +2,6 @@
     This page shows books currently borrowed by the user
     Users can return books or extend return time.
     Author: Hao Fan
-
     Date: 5/2/24
     File: navbar.html
  -->
@@ -34,11 +33,16 @@
                         <false><a class="nav-link" aria-current="page" href="contact">Contact</a></false>
                     </check>
                 </li>
+                <li class="nav-item px-2">
+                    <check if="{{@active == 'donate'}}">
+                        <true><a class="nav-link active" aria-current="page" href="donate">Donate</a></true>
+                        <false><a class="nav-link" aria-current="page" href="donate">Donate</a></false>
+                    </check>
+                </li>
             </ul>
         </div>
         <a class="btn btn-outline-success" href="login">Login</a>
-<!--        <a class="btn btn-outline-danger" href="#">Log Out</a>-->
+        <!-- <a class="btn btn-outline-danger" href="#">Log Out</a> -->
         <a class="btn btn-outline-success" href="admin">Admin</a>
-
     </div>
 </nav>

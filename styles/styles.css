@@ -104,3 +104,12 @@ body {
     border-radius: 10px;  /* Optional: adds rounded corners to the image */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Optional: adds a shadow effect */
 }
+
+
+#card-element {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-top: 10px;
+}
