@@ -1,6 +1,6 @@
 <?php
 
-class Magazine extends Item
+class Magazine extends Item implements JsonSerializable
 {
     private $_pages;
     private $_cover;
@@ -46,4 +46,20 @@ class Magazine extends Item
     }
 
 
+    // Only put properties here that you want serialized.
+    public function jsonSerialize() {
+        return Array(
+            'id'    => $this->_id,
+            'title'   => $this->_title,
+            'description' => $this->_description,
+            'publishedDate'     => $this->_publishedDate,
+            'available' => $this->_available,
+            'borrowedDate'    => $this->_borrowedDate, // example for other objects
+            'returnDate'   => $this->_returnDate,
+            'borrower'   => $this->_borrower,
+            'hold'   => $this->_holds,
+            'pages' => $this->_pages,
+            'cover' => $this->_cover
+        );
+    }
 }

@@ -15,23 +15,23 @@
     <div class="container py-5">
         <h1 class="text-center mb-4">My Borrows</h1>
         <div class="search-results">
-            <repeat group="{{ @myBorrows[0] }}" value="{{ @result }}">
+            <repeat group="{{ @borrowedItems }}" value="{{ @item }}">
                 <div class="search-result-item p-4">
                     <div class="row">
                         <div class="col-auto">
-                            <img src="{{@result->volumeInfo->imageLinks->thumbnail}}">
+                            <img src="{{@item.cover}}">
                         </div>
                         <div class="col">
                             <div class="d-flex flex-column gap-1">
-                                <span class="book-title">{{ @result->volumeInfo->title }}</span>
-                                <span>by <span class="book-author">{{  implode(", ", @result->volumeInfo->authors)}}</span></span>
-                                <span><span class="book-pages">{{ @result->volumeInfo->pageCount }}</span> pages</span>
+                                <span class="book-title">{{ @item.title }}</span>
+                                <span>by <span class="book-author">{{@item.author}}</span></span>
+                                <span><span class="book-pages">{{ @item.pages }}</span> pages</span>
                             </div>
 
                         </div>
                         <div class="col-auto d-flex flex-column ">
                             <div class="d-flex flex-column gap-1 mb-auto align-items-end">
-                                <span>Due Date: <span>5/25/2024</span></span>
+                                <span>Due Date: <span>{{@item.returnDate}}</span></span>
                                 <span>Days Remaining: <span>6</span></span>
                             </div>
 

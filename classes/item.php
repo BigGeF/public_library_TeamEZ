@@ -1,6 +1,6 @@
 <?php
 
-abstract class Item {
+abstract class Item implements JsonSerializable{
     protected $_id;
     protected $_title;
     protected $_description;
@@ -169,6 +169,8 @@ abstract class Item {
     }
 
 
+
+
     /**
      * @param Integer $id ID of the user to add to the hold array
      */
@@ -206,8 +208,8 @@ abstract class Item {
         $oldDate = $this->_returnDate;
         $newDate = strtotime("+".$days." day", $oldDate);
         $this->_returnDate = $newDate;
-        //echo date('m/d/Y', $newDate);
     }
+
 
 
 }

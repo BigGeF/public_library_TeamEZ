@@ -1,7 +1,7 @@
 <?php
 
 
-class Book extends Item
+class Book extends Item implements JsonSerializable
 {
     private $_authors;
     private $_pages;
@@ -82,5 +82,22 @@ class Book extends Item
         $this->_cover = $cover;
     }
 
-
+    // Only put properties here that you want serialized.
+    public function jsonSerialize() {
+        return Array(
+            'id'    => $this->_id,
+            'title'   => $this->_title,
+            'description' => $this->_description,
+            'publishedDate'     => $this->_publishedDate,
+            'available' => $this->_available,
+            'borrowedDate'    => $this->_borrowedDate, // example for other objects
+            'returnDate'   => $this->_returnDate,
+            'borrower'   => $this->_borrower,
+            'hold'   => $this->_holds,
+            'authors' => $this->_authors,
+            'pages' => $this->_pages,
+            'isbn' => $this->_isbn,
+            'cover' => $this->_cover
+        );
+    }
 }

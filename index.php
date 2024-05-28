@@ -83,6 +83,12 @@ $f3->route('GET /cancel', function() {
     echo $view->render('views/cancel.html');
 });
 
+// Define an add-to-database route
+$f3->route("POST /add-to-database", function (){
+    $GLOBALS['con']->addItemToDatabase();
+});
+
+
 // Run fat free
 $f3->run();
 
