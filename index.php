@@ -24,7 +24,7 @@ $f3->route('GET /', function() {
 });
 
 // Define a signUp route
-$f3->route('GET /signUp', function() {
+$f3->route('GET|POST /signUp', function() {
     // Render SignUp Page
     $GLOBALS['con']->signUp();
 });
@@ -47,7 +47,7 @@ $f3->route('GET|POST /contact', function() {
     $GLOBALS['emailCon']->contact();
 });
 
-$f3->route('GET /login', function() {
+$f3->route('GET|POST /login', function() {
     // Render a login page
     $GLOBALS['con']->logIn();
 });

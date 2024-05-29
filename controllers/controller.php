@@ -27,6 +27,64 @@ class Controller
 
     function signUp()
     {
+        // declare variables
+        $firstName = '';
+        $lastName = '';
+        $email = '';
+        $password = '';
+
+        // signup form posted
+        if ($_SERVER['REQUEST_METHOD'] == "POST") {
+            // validate form data
+            if (Validate::validName($_POST['firstName'])) {
+                $firstName = $_POST['firstName'];
+            } else {
+                $this->_f3->set('errors["firstName"]', 'Invalid first name');
+            }
+
+            if (Validate::validName($_POST['lastName'])) {
+                $lastName = $_POST['lastName'];
+            } else {
+                $this->_f3->set('errors["lastName"]', 'Invalid last name');
+            }
+
+            if (Validate::validPassword($_POST['password'])) {
+                $password = $_POST['password'];
+            } else {
+                $this->_f3->set('errors["password"]', 'Invalid Password');
+            }
+
+            if (Validate::validEmail($_POST['email'])) {
+                $email = $_POST['email'];
+            } else {
+                $this->_f3->set('errors["email"]', 'Please enter a valid email');
+            }
+
+            // if no errors, add user to database
+            if (empty($this->_f3->get('errors'))) {
+                // hash password
+                $options = [
+                    'cost' => 12,
+                ];
+
+                $hash = password_hash($password, PASSWORD_BCRYPT, $options);
+
+                // get user information from database
+                $sql = 'INSERT INTO users (first, last, email, password)
+                VALUES (:first, :last, :email, :password)';
+
+                $statement = $this->dbh->prepare($sql);
+                $statement->bindParam(':first', $firstName);
+                $statement->bindParam(':last', $lastName);
+                $statement->bindParam(':email', $email);
+                $statement->bindParam(':password', $hash);
+                $statement->execute();
+
+                // send user to login form
+                $this->_f3->reroute('login');
+            }
+        }
+
         // Render the signUp page
         $view = new Template();
         echo $view->render('views/signUp.html');
@@ -130,6 +188,57 @@ class Controller
 
     function logIn()
     {
+        // declare variables
+        $email = '';
+        $password = '';
+
+        // login form posted
+        if ($_SERVER['REQUEST_METHOD'] == "POST") {
+            // validate form data
+            if (Validate::validPassword($_POST['password'])) {
+                $password = $_POST['password'];
+            } else {
+                $this->_f3->set('errors["password"]', 'Invalid Password');
+            }
+
+            if (Validate::validEmail($_POST['email'])) {
+                $email = $_POST['email'];
+            } else {
+                $this->_f3->set('errors["email"]', 'Please enter a valid email');
+            }
+
+            // begin login process if no errors
+            // TODO: debug error messages. Login currently works though
+            if (empty($this->_f3->get('errors'))) {
+                // get user information from database
+                $sql = 'SELECT password, id FROM users WHERE `email`= :email';
+                $statement = $this->dbh->prepare($sql);
+                $statement->bindParam(':email', $email);
+                $statement->execute();
+
+                echo '<script>console.log("statement executed");</script>';
+                // fetch the result
+                if ($row = $statement->fetch(PDO::FETCH_ASSOC)) {
+                    // assign variables
+                    $hash = $row['password'];
+                    $id = $row['id'];
+
+                    // verify credentials
+                    if (password_verify($password, $hash)) {
+                        // do something with user id
+
+                        // send user to borrows page
+                        $this->_f3->reroute('borrows');
+                    }
+                    else { // user not found
+                        // set error message
+                        $this->_f3->set('errors["login_failure"]', 'Email or password is incorrect');
+                        // reroute to login page
+                        $this->_f3->reroute('login');
+                    }
+                }
+            }
+        }
         // Render a login page
         $view = new Template();
         echo $view->render('views/login.html');
