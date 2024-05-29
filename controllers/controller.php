@@ -256,6 +256,69 @@ class Controller
         //save the users into f3's "hive"
         $this->_f3->set('users', $users);
 
+        //get all books data
+        $sql = "SELECT * FROM books ORDER BY returnDate";
+        $statement = $this->dbh->prepare($sql);
+        $statement->execute();
+        $books = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        $itemObjects = array();
+
+        foreach ($books as $book){
+            // Set General Item Parameters
+            $itemParams = array();
+            $itemParams['id'] = $book['id'];
+            $itemParams['title'] = $book['title'];
+            $itemParams['desc'] = $book['description'];
+            $itemParams['pubDate'] = $book['publishedDate'];
+            $itemParams['available'] = $book['available'];
+            $itemParams['borrowDate'] = $book['borrowedDate'];
+            $itemParams['returnDate'] = $book['returnDate'];
+            $itemParams['borrower'] = $book['user_id'];
+
+            // Set Book Parameters
+            $secondaryParams = array();
+            $secondaryParams['authors'] = $book['authors'];
+            $secondaryParams['pages'] = $book['pages'];
+            $secondaryParams['isbn'] = $book['isbn'];
+            $secondaryParams['cover'] = $book['cover'];
+
+            // Instantiate a Book and add to the item array
+            $bookObj = new Book($itemParams, $secondaryParams);
+            $itemObjects[] = $bookObj;
+        }
+
+        //get all books data
+        $sql = "SELECT * FROM magazines ORDER BY returnDate";
+        $statement = $this->dbh->prepare($sql);
+        $statement->execute();
+        $mags = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        foreach ($mags as $mag){
+            // Set General Item Parameters
+            $itemParams = array();
+            $itemParams['id'] = $mag['id'];
+            $itemParams['title'] = $mag['title'];
+            $itemParams['desc'] = $mag['description'];
+            $itemParams['pubDate'] = $mag['publishedDate'];
+            $itemParams['available'] = $mag['available'];
+            $itemParams['borrowDate'] = $mag['borrowedDate'];
+            $itemParams['returnDate'] = $mag['returnDate'];
+            $itemParams['borrower'] = $mag['user_id'];
+
+            // Set Book Parameters
+            $secondaryParams = array();
+            $secondaryParams['pages'] = $mag['pages'];
+            $secondaryParams['cover'] = $mag['cover'];
+
+            // Instantiate a Book and add to the item array
+            $magObj = new Magazine($itemParams, $secondaryParams);
+            $itemObjects[] = $magObj;
+        }
+
+        //save the users into f3's "hive"
+        $this->_f3->set('items', $itemObjects);
+
         //render the admin page
         $view = new Template();
         echo $view->render('views/admin.html');

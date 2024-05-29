@@ -32,7 +32,11 @@
                         <div class="col-auto d-flex flex-column ">
                             <div class="d-flex flex-column gap-1 mb-auto align-items-end">
                                 <span>Due Date: <span>{{@item.returnDate}}</span></span>
-                                <span>Days Remaining: <span>6</span></span>
+                                <check if="{{ceil(((strtotime(@item.returnDate))-time())/60/60/24) >= 0}}">
+                                    <true><span>Days Remaining: <span>{{ceil(((strtotime(@item.returnDate))-time())/60/60/24)}}</span></span></true>
+                                    <false><span>Days Overdue: <span>{{abs(ceil(((strtotime(@item.returnDate))-time())/60/60/24))}}</span></span></false>
+                                </check>
+
                             </div>
 
                             <div class="d-flex flex-column gap-1">

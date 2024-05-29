@@ -37,6 +37,30 @@
         </repeat>
         </tbody>
     </table>
+
+    <h1 class="text-center mb-4">All Checked Out Items</h1>
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>Type</th>
+            <th>Title</th>
+            <th>Checked Out Date</th>
+            <th>Return Date</th>
+            <th>Borrower ID</th>
+        </tr>
+        </thead>
+        <tbody>
+        <repeat group="{{ @items }}" value="{{ @item }}">
+            <tr>
+                <td>{{ get_class(@item) == "Book" ? "Book" : "Magazine" }}</td>
+                <td>{{ @item->getTitle() }}</td>
+                <td>{{ @item->getBorrowedDate() }}</td>
+                <td>{{ @item->getReturnDate() }}</td>
+                <td>{{ @item->getBorrower() }}</td>
+            </tr>
+        </repeat>
+        </tbody>
+    </table>
 </div>
 
 <!-- 引入 Bootstrap JS 文件 -->
