@@ -1,4 +1,6 @@
 <?php
+session_start();
+
 //get the database.php
 
 require_once "database.php";
@@ -206,7 +208,7 @@ class Controller
             } else {
                 $this->_f3->set('errors["email"]', 'Please enter a valid email');
             }
-
+            $_SESSION["userId"] = $id;
             // begin login process if no errors
             // TODO: debug error messages. Login currently works though
             if (empty($this->_f3->get('errors'))) {
@@ -226,7 +228,7 @@ class Controller
                     // verify credentials
                     if (password_verify($password, $hash)) {
                         // do something with user id
-
+                        $this->_f3->set('SESSION["userId"]',$id);
                         // send user to borrows page
                         $this->_f3->reroute('borrows');
                     }
@@ -242,6 +244,13 @@ class Controller
         // Render a login page
         $view = new Template();
         echo $view->render('views/login.html');
+    }
+
+
+    function logOut()
+    {
+        session_destroy();
+        $this->_f3->reroute('/');
     }
 
     //get all users and show at admin.html page

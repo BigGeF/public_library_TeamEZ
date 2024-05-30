@@ -21,28 +21,38 @@
                         <false><a class="nav-link" aria-current="page" href="search">Catalog</a></false>
                     </check>
                 </li>
-                <li class="nav-item px-2">
-                    <check if="{{@active == 'borrows'}}">
-                        <true><a class="nav-link active" aria-current="page" href="borrows">My Borrows</a></true>
-                        <false><a class="nav-link" aria-current="page" href="borrows">My Borrows</a></false>
-                    </check>
-                </li>
+                <check if="{{@SESSION.userId}}">
+                    <li class="nav-item px-2">
+                        <check if="{{@active == 'borrows'}}">
+                            <true><a class="nav-link active" aria-current="page" href="borrows">My Borrows</a></true>
+                            <false><a class="nav-link" aria-current="page" href="borrows">My Borrows</a></false>
+                        </check>
+                    </li>
+                </check>
+
                 <li class="nav-item px-2">
                     <check if="{{@active == 'contact'}}">
                         <true><a class="nav-link active" aria-current="page" href="contact">Contact</a></true>
                         <false><a class="nav-link" aria-current="page" href="contact">Contact</a></false>
                     </check>
                 </li>
-                <li class="nav-item px-2">
-                    <check if="{{@active == 'donate'}}">
-                        <true><a class="nav-link active" aria-current="page" href="donate">Donate</a></true>
-                        <false><a class="nav-link" aria-current="page" href="donate">Donate</a></false>
-                    </check>
-                </li>
+                <check if="{{@SESSION.userId}}">
+                    <li class="nav-item px-2">
+                        <check if="{{@active == 'donate'}}">
+                            <true><a class="nav-link active" aria-current="page" href="donate">Donate</a></true>
+                            <false><a class="nav-link" aria-current="page" href="donate">Donate</a></false>
+                        </check>
+                    </li>
+                </check>
+
             </ul>
         </div>
-        <a class="btn btn-outline-success" href="login">Login</a>
-        <!-- <a class="btn btn-outline-danger" href="#">Log Out</a> -->
+        <p>{{@SESSION.userId}}</p>
+        <check if="{{@SESSION.userId}}">
+            <true><a class="btn btn-outline-danger" href="logout">Log Out</a></true>
+            <false>   <a class="btn btn-outline-success" href="login">Login</a></false>
+        </check>
+
         <a class="btn btn-outline-success" href="admin">Admin</a>
     </div>
 </nav>

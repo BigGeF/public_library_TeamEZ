@@ -31,8 +31,8 @@ class DonationController
                         'quantity' => 1,
                     ]],
                     'mode' => 'payment',
-                    'success_url' => 'https://yourdomain.com/success',
-                    'cancel_url' => 'https://yourdomain.com/cancel',
+                    'success_url' => 'https://hfan.greenriverdev.com/328/public_library_TeamEZ/success',
+                    'cancel_url' => 'https://hfan.greenriverdev.com/328/public_library_TeamEZ/cancel',
                 ]);
 
                 header("HTTP/1.1 303 See Other");

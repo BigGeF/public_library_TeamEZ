@@ -51,32 +51,31 @@ $f3->route('GET|POST /login', function() {
     // Render a login page
     $GLOBALS['con']->logIn();
 });
+$f3->route('GET|POST /logout', function() {
+    // Render a login page
+    $GLOBALS['con']->logOut();
+});
 
 // Define an admin route
 $f3->route('GET /admin', function() {
     $GLOBALS['con']->adminGetUsers();
 });
 
-// Define a route for the donation page
+//Stripe Define a route for the donation page
 $f3->route('GET|POST /donate', function() {
     // Render a donation page
     $GLOBALS['donateCon']->donate();
 });
 
-// Define a route for creating the Checkout Session
-//$f3->route(' /create-checkout-session', function() {
-//    // Create Checkout Session
-//    $GLOBALS['donateCon']->donate();
-//});
 
-// Define a route for success page
+//Stripe Define a route for successfully paid by card
 $f3->route('GET /success', function() {
     // Render success page
     $view = new Template();
     echo $view->render('views/success.html');
 });
 
-// Define a route for cancel page
+//Stripe Define a route for cancel card page
 $f3->route('GET /cancel', function() {
     // Render cancel page
     $view = new Template();
