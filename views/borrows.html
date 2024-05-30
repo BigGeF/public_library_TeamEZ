@@ -15,6 +15,11 @@
     <div class="container py-5">
         <h1 class="text-center mb-4">My Borrows</h1>
         <div class="search-results">
+            <check if="{{@borrowedItems == null}}">
+                <div class="d-flex pt-4">
+                    <a class="btn btn-outline-success m-auto" href="search">Search our catalog for items available to borrow</a>
+                </div>
+            </check>
             <repeat group="{{ @borrowedItems }}" value="{{ @item }}">
                 <div class="search-result-item p-4">
                     <div class="row">
