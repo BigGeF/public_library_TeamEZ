@@ -4,6 +4,28 @@
 <include href="views/header.html" with="title=Admin - All Users"></include>
 <include href="views/navbar.html" with="active=admin"></include>
 
+<script>
+    function sendOverdueEmail(id, item){
+        console.log(id, item);
+        if (confirm("Send overdue email to user " + id + "?")){
+            $.ajax({
+                url:"overdue-email",    //the page containing php script
+                type: "post",    //request type,
+                data: {overdueItem: item, overdueId: id, },
+                success:function(result){
+                    console.log("Result: ", result);
+                    alert('Email has been sent!');
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error:', error);
+                    alert('Sorry, something went wrong!');
+                }
+            });
+        }
+    }
+</script>
+
+
 <div class="container py-5">
     <h1 class="text-center mb-4">All Users</h1>
     <table class="table table-striped">
@@ -38,6 +60,7 @@
             <th>Checked Out Date</th>
             <th>Return Date</th>
             <th>Borrower ID</th>
+            <th>Email Overdue Reminder</th>
         </tr>
         </thead>
         <tbody>
@@ -46,8 +69,22 @@
                 <td>{{ get_class(@item) == "Book" ? "Book" : "Magazine" }}</td>
                 <td>{{ @item->getTitle() }}</td>
                 <td>{{ @item->getBorrowedDate() }}</td>
-                <td>{{ @item->getReturnDate() }}</td>
+                <td>
+                    <check if="{{DataLayer::isOverdue(@item->getReturnDate())}}">
+                        <true><span class="overdue">{{ @item->getReturnDate() }}</span></true>
+                        <false><span class="not-overdue">{{ @item->getReturnDate() }}</span></false>
+                    </check>
+                </td>
                 <td>{{ @item->getBorrower() }}</td>
+                <td>
+                    <set id="{{@item->getBorrower()}}" />
+                    <check if="{{DataLayer::isOverdue(@item->getReturnDate())}}">
+                        <true><button class="btn btn-danger" onclick="sendOverdueEmail(`{{@item->getBorrower()}}`, `{{@item->getTitle()}}`)">Send Email</button></true>
+                        <false><button class="btn btn-danger" disabled>Send Email</button></false>
+                    </check>
+
+                </td>
+
             </tr>
         </repeat>
         </tbody>
@@ -55,7 +92,7 @@
 </div>
 
 <!-- 引入 Bootstrap JS 文件 -->
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>

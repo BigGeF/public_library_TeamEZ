@@ -83,7 +83,7 @@ class Controller
                 $statement->execute();
 
                 // send user to login form
-                $this->_f3->reroute('login');
+                $this->_f3->reroute('search');
             }
         }
 
@@ -166,21 +166,19 @@ class Controller
 
     function borrows()
     {
-        // Get Borrows Dummy data
-        $data = json_encode(DataLayer::getMyBorrowsData());
-        $borrows = json_decode($data)->items;
-
         // Set myBorrows data
-        //$this->_f3->set('myBorrows', array($borrows));
+        $id = $this->_f3->get("SESSION.userId");
 
-        //get all users data
-        $sql = "SELECT * FROM books";
-        $statement = $this->dbh->prepare($sql);
-        $statement->execute();
-        $items = $statement->fetchAll(PDO::FETCH_ASSOC);
+        if ($id){
+            //get all users data
+            $sql = "SELECT * FROM books WHERE user_id = $id";
+            $statement = $this->dbh->prepare($sql);
+            $statement->execute();
+            $items = $statement->fetchAll(PDO::FETCH_ASSOC);
 
-        //save the users into f3's "hive"
-        $this->_f3->set('borrowedItems', $items);
+            //save the users into f3's "hive"
+            $this->_f3->set('borrowedItems', $items);
+        }
 
         // Render a borrows page
         $view = new Template();
@@ -208,12 +206,12 @@ class Controller
             } else {
                 $this->_f3->set('errors["email"]', 'Please enter a valid email');
             }
-            $_SESSION["userId"] = $id;
+
             // begin login process if no errors
             // TODO: debug error messages. Login currently works though
             if (empty($this->_f3->get('errors'))) {
                 // get user information from database
-                $sql = 'SELECT password, id FROM users WHERE `email`= :email';
+                $sql = 'SELECT password, id, role FROM users WHERE `email`= :email';
                 $statement = $this->dbh->prepare($sql);
                 $statement->bindParam(':email', $email);
                 $statement->execute();
@@ -224,13 +222,22 @@ class Controller
                     // assign variables
                     $hash = $row['password'];
                     $id = $row['id'];
+                    $role = $row['role'];
 
                     // verify credentials
                     if (password_verify($password, $hash)) {
-                        // do something with user id
+                        // set user id
                         $this->_f3->set('SESSION["userId"]',$id);
-                        // send user to borrows page
-                        $this->_f3->reroute('borrows');
+                        // set user role
+                        $this->_f3->set('SESSION["role"]',$role);
+                        if ($role == 0){
+                            // send user to borrows page
+                            $this->_f3->reroute('borrows');
+                        }else{
+                            // send admins to admin page
+                            $this->_f3->reroute('admin');
+                        }
+
                     }
                     else { // user not found
                         // set error message
@@ -337,7 +344,7 @@ class Controller
     {
 
         $item = json_decode($_POST['item']);
-        //echo $item;
+
 
         // 1. Define the query
         $sql = "INSERT INTO books (title, description, available, publishedDate, borrowedDate, returnDate,
@@ -349,30 +356,31 @@ class Controller
         $statement = $this->dbh->prepare($sql);
 
         // 3. Bind the parameters
-        $title = $item->title;
-        $description = $item->description;
-        $available = true;
+        $title = $item->title == "null" ? null : $item->title;
+        $description = $item->description == "null" ? null : $item->description;
+        $available = 0;
         $publishedDate = $item->publishedDate == "null" ? null : $item->publishedDate;
-        $borrowedDate = $item->borrowedDate == "null" ? null : $item->borrowedDate;
-        $returnDate = $item->returnDate == "null" ? null : $item->returnDate;
-        $userId = 101;
-        $authors = implode(", ", $item->authors);
-        $pages = $item->pages;
-        $isbn = $item->isbn;
-        $cover = $item->cover;
+        $borrowedDate = date('Y-m-d', time());
+        $returnDate = date('Y-m-d', strtotime($borrowedDate . '+14days'));
+        $userId = $this->_f3->get("SESSION.userId");
+        $authors = $item->authors ? implode(", ", $item->authors) : null;
+        $pages = $item->pages == "null" ? null : $item->pages;
+        $isbn = $item->isbn == "null" ? null : $item->isbn;
+        $cover = $item->cover == "null" ? null : $item->cover;
 
-        /*// 3. TEST Bind the parameters
-        $title = "Dune";
-        $description = "Dune description";
-        $available = true;
-        $publishedDate = "1980-12-05";
-        $borrowedDate = "2024-5-28";
-        $returnDate = "2024-6-12";
-        $userId = 101;
-        $authors = "Frank Herbert";
-        $pages = "980";
-        $isbn = "9780593438367";
-        $cover = "http://books.google.com/books/content?id=UAhAEAAAQBAJ&printsec=frontcover&img=1&zoom=1&edge=curl&source=gbs_api";*/
+        echo $title . ", " . $description  . ", " . $available  . ", " . $publishedDate  . ", " . $borrowedDate  . ", " . $returnDate  . ", " . $userId  . ", " . $authors  . ", " . $pages  . ", " . $isbn  . ", " . $cover;
+            /*// 3. TEST Bind the parameters
+            $title = "Dune";
+            $description = "Dune description";
+            $available = true;
+            $publishedDate = "1980-12-05";
+            $borrowedDate = "2024-5-28";
+            $returnDate = "2024-6-12";
+            $userId = 101;
+            $authors = "Frank Herbert";
+            $pages = "980";
+            $isbn = "9780593438367";
+            $cover = "http://books.google.com/books/content?id=UAhAEAAAQBAJ&printsec=frontcover&img=1&zoom=1&edge=curl&source=gbs_api";*/
 
         $statement->bindParam(':title', $title);
         $statement->bindParam(':description', $description);
@@ -398,6 +406,40 @@ class Controller
         }
 
     }
+
+    function sendOverdueEmail(){
+        $overdueUserID = $_POST['overdueId'];
+
+        // get user info from id
+        //get all books data
+        $sql = "SELECT * FROM users WHERE id = $overdueUserID";
+        $statement = $this->dbh->prepare($sql);
+        $statement->execute();
+        $user = $statement->fetch(PDO::FETCH_ASSOC);
+
+        if ($user){
+            $overdueItem = $_POST['overdueItem'];
+
+            $firstName = $user["fName"];
+            $lastName = $user["lName"];
+            $email = $user["email"];
+            $message = "This is just a friendly reminder that " . $overdueItem . " is overdue. Please return the 
+                                                                               item at your earliest convenience.";
+
+            $to = 'miss.matthew@student.greenriver.edu';
+            $subject = 'Contact Form Submission';
+            $body = "First Name: $firstName\nLast Name: $lastName\nEmail: $email\nMessage: $message";
+            $headers = "From: $email";
+
+            if (mail($to, $subject, $body, $headers)) {
+                echo 'Message has been sent';
+            } else {
+                echo 'Failed to send message';
+            }
+        }
+
+    }
+
 }
 
 

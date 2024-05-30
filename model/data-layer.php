@@ -49,6 +49,18 @@ class DataLayer
         return json_decode($output);
     }
 
+    static function isOverdue($returnDate){
+        $date = strtotime($returnDate);
+        return ceil(($date-time())/60/60/24) < 0;
+    }
 
+    static function getDaysFromReturnDate($returnDate){
+        $date = strtotime($returnDate);
+        return abs(ceil(($date-time())/60/60/24)); //absolute value used so no negatives returned
+    }
+
+    static function addToDatabase(){
+        echo "Hello";
+    }
 }
 
