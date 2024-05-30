@@ -51,7 +51,8 @@
             <true><a class="btn btn-outline-danger" href="logout">Log Out</a></true>
             <false>   <a class="btn btn-outline-success" href="login">Login</a></false>
         </check>
-
-        <a class="btn btn-outline-success" href="admin">Admin</a>
+        <check if="{{@SESSION.role == 1}}">
+            <a class="btn btn-outline-success" href="admin">Admin</a>
+        </check>
     </div>
 </nav>

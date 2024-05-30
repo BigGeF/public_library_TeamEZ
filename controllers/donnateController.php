@@ -15,6 +15,12 @@ class DonationController
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $amount = $_POST['amount'];
 
+            // Get server and root url
+            $success = "https://" . $_SERVER['HTTP_HOST'] . $this->_f3->BASE . "/success";
+            $cancel = "https://" . $_SERVER['HTTP_HOST'] . $this->_f3->BASE . "/cancel";
+
+            echo $success;
+
             \Stripe\Stripe::setApiKey('sk_test_51PKxM2B3EtH8G57ohLIr117P87NYvxjvGNdKuFYYegAaSNupUxeMfPC9TuVv08PxoPXEq7nBKPIM021HjcwNWVj200kmEkQ45z'); // 替换为您的 Stripe 私钥
 
             try {
@@ -31,8 +37,8 @@ class DonationController
                         'quantity' => 1,
                     ]],
                     'mode' => 'payment',
-                    'success_url' => 'https://hfan.greenriverdev.com/328/public_library_TeamEZ/success',
-                    'cancel_url' => 'https://hfan.greenriverdev.com/328/public_library_TeamEZ/cancel',
+                    'success_url' => $success,
+                    'cancel_url' => $cancel,
                 ]);
 
                 header("HTTP/1.1 303 See Other");

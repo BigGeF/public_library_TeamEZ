@@ -15,6 +15,11 @@
     <div class="container py-5">
         <h1 class="text-center mb-4">My Borrows</h1>
         <div class="search-results">
+            <check if="{{@borrowedItems == null}}">
+                <div class="d-flex pt-4">
+                    <a class="btn btn-outline-success m-auto" href="search">Search our catalog for items available to borrow</a>
+                </div>
+            </check>
             <repeat group="{{ @borrowedItems }}" value="{{ @item }}">
                 <div class="search-result-item p-4">
                     <div class="row">
@@ -32,9 +37,9 @@
                         <div class="col-auto d-flex flex-column ">
                             <div class="d-flex flex-column gap-1 mb-auto align-items-end">
                                 <span>Due Date: <span>{{@item.returnDate}}</span></span>
-                                <check if="{{ceil(((strtotime(@item.returnDate))-time())/60/60/24) >= 0}}">
-                                    <true><span>Days Remaining: <span>{{ceil(((strtotime(@item.returnDate))-time())/60/60/24)}}</span></span></true>
-                                    <false><span>Days Overdue: <span>{{abs(ceil(((strtotime(@item.returnDate))-time())/60/60/24))}}</span></span></false>
+                                <check if="{{DataLayer::isOverdue(@item.returnDate)}}">
+                                    <true><span class="overdue">Days Overdue: <span>{{DataLayer::getDaysFromReturnDate(@item.returnDate)}}</span></span></true>
+                                    <false><span class="not-overdue">Days Remaining: <span>{{DataLayer::getDaysFromReturnDate(@item.returnDate)}}</span></span></false>
                                 </check>
 
                             </div>

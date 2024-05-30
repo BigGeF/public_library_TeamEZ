@@ -1,6 +1,8 @@
 :root {
     --font-accent-color: #02729e;
     --result-border-color: #ccc;
+    --not-overdue-color: #209a20;
+    --overdue-color: #d24747;
 }
 body {
     /*background-image: url('./img/background.jpg');*/
@@ -67,6 +69,10 @@ body {
     border-radius: 0;
 }
 
+.search-btn{
+    height: 38px;
+}
+
 /*******************************************************************/
 /**********************   SEARCH RESULTS   *************************/
 /*******************************************************************/
@@ -112,4 +118,17 @@ body {
     border: 1px solid #ccc;
     border-radius: 4px;
     margin-top: 10px;
+}
+
+
+/*******************************************************************/
+/*************************   Item Status   *************************/
+/*******************************************************************/
+
+.not-overdue{
+    color: var(--not-overdue-color);
+}
+
+.overdue{
+    color: var(--overdue-color);
 }

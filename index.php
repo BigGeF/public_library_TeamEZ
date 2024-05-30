@@ -87,6 +87,11 @@ $f3->route("POST /add-to-database", function (){
     $GLOBALS['con']->addItemToDatabase();
 });
 
+// Define an add-to-database route
+$f3->route("POST /overdue-email", function (){
+    $GLOBALS['con']->sendOverdueEmail();
+});
+
 
 // Run fat free
 $f3->run();

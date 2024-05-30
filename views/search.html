@@ -12,26 +12,28 @@
         console.log(action);
         console.log(type);
 
-        $.ajax({
-            url:"add-to-database",    //the page containing php script
-            type: "post",    //request type,
-            data: {item: action},
-            success:function(result){
-                console.log("Result: ", result);
-                alert('Book has been checked out!');
-            },
-            error: function(xhr, status, error) {
-                console.error('Error:', error);
-                alert('Sorry, something went wrong!');
-            }
-        });
+        if (confirm("Check out item? It will be due in 2 weeks.")){
+            $.ajax({
+                url:"add-to-database",    //the page containing php script
+                type: "post",    //request type,
+                data: {item: action},
+                success:function(result){
+                    console.log("Result: ", result);
+                    alert('Book has been checked out!');
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error:', error);
+                    alert('Sorry, something went wrong!');
+                }
+            });
+        }
 
     }
 
 </script>
 <!--Header-->
 <include href="views/header.html" with="title=Search Catalog"></include>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 
 <body>
     <!--Navbar-->
@@ -65,7 +67,9 @@
                             </div>
                         </div>
                         <div class="col-auto ps-0">
-                            <button type="submit" class="btn btn-primary "><i class="fa-solid fa-magnifying-glass px-2"></i></button>
+                            <div class="mb-3">
+                                <button type="submit" class="btn btn-primary search-btn"><i class="fa-solid fa-magnifying-glass px-2"></i></button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -100,9 +104,20 @@
 
                             </div>
                             <div class="col-auto mt-auto">
+
                                 <div class="d-flex flex-column gap-1">
-                                    <button class="btn btn-primary" onclick='saveItemClick(`{{ json_encode(@result) }}`, `Book`)'>Check Out</button>
-                                    <button class="btn btn-danger" >Put On Hold</button>
+                                    <check if="{{@SESSION.userId}}">
+
+                                        <true>
+                                            <button class="btn btn-primary" onclick='saveItemClick(`{{ json_encode(@result) }}`, `Book`)'>Check Out</button>
+                                            <button class="btn btn-danger" disabled>Put On Hold</button>
+                                        </true>
+                                        <false>
+                                            <a class="btn btn-outline-success" href="login">Login/Sign Up to Check Out</a>
+                                            <button class="btn btn-primary" disabled>Check Out</button>
+                                            <button class="btn btn-danger" disabled>Put On Hold</button>
+                                        </false>
+                                    </check>
                                 </div>
 
                             </div>
@@ -157,3 +172,4 @@
 
 </body>
 </html>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
