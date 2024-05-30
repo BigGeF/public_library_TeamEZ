@@ -47,7 +47,6 @@
 
             </ul>
         </div>
-        <p>{{@SESSION.userId}}</p>
         <check if="{{@SESSION.userId}}">
             <true><a class="btn btn-outline-danger" href="logout">Log Out</a></true>
             <false>   <a class="btn btn-outline-success" href="login">Login</a></false>

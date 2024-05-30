@@ -82,8 +82,14 @@ class Controller
                 $statement->bindParam(':password', $hash);
                 $statement->execute();
 
+                //get the last inserted ID
+                $id = $this->dbh->lastInsertId();
+                //Store the user id in session
+                $this->_f3->set('SESSION["userId]',$id);
+
                 // send user to login form
                 $this->_f3->reroute('login');
+
             }
         }
 
