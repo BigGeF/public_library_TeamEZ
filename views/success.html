@@ -17,6 +17,10 @@
 <div class="container py-5">
     <h1 class="text-center mb-4">Payment Successful</h1>
     <p class="text-center">Thank you for your donation! Your payment was processed successfully.</p>
+    <p class="text-center">Donation Amount: ${{ @SESSION.donationAmount }}</p>
+    <p class="text-center">Donation Date: {{ @SESSION.donationDate }}</p>
+    <p class="text-center">Donor Name: {{ @SESSION.userInfo.first }} {{ @SESSION.userInfo.last }}</p>
+    <p class="text-center">Donor Email: {{ @SESSION.userInfo.email }}</p>
 </div>
 
 <!-- Required JavaScript -->

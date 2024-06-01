@@ -71,8 +71,7 @@ $f3->route('GET|POST /donate', function() {
 //Stripe Define a route for successfully paid by card
 $f3->route('GET /success', function() {
     // Render success page
-    $view = new Template();
-    echo $view->render('views/success.html');
+    $GLOBALS['donateCon']->handleSuccess();
 });
 
 //Stripe Define a route for cancel card page

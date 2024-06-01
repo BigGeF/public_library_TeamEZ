@@ -84,19 +84,11 @@ class Controller
 
                 //get the last inserted ID
                 $id = $this->dbh->lastInsertId();
-<<<<<<< HEAD
-                //Store the user id in session
-                $this->_f3->set('SESSION["userId]',$id);
 
-                // send user to login form
-                $this->_f3->reroute('login');
-
-=======
                 $this->_f3->set("SESSION.userId", $id);
 
                 // send user to login form
                 $this->_f3->reroute('search');
->>>>>>> 32606540d121a9bfa138ebafa72c55d2741ac73d
             }
         }
 
@@ -224,7 +216,7 @@ class Controller
             // TODO: debug error messages. Login currently works though
             if (empty($this->_f3->get('errors'))) {
                 // get user information from database
-                $sql = 'SELECT password, id, role FROM users WHERE `email`= :email';
+                $sql = 'SELECT * FROM users WHERE `email`= :email';
                 $statement = $this->dbh->prepare($sql);
                 $statement->bindParam(':email', $email);
                 $statement->execute();
@@ -236,9 +228,10 @@ class Controller
                     $hash = $row['password'];
                     $id = $row['id'];
                     $role = $row['role'];
-
+                    $first = $row['first'];
                     // verify credentials
                     if (password_verify($password, $hash)) {
+                        $this->_f3->set('SESSION["first"]',$first);
                         // set user id
                         $this->_f3->set('SESSION["userId"]',$id);
                         // set user role
