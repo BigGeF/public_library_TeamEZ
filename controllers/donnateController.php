@@ -102,4 +102,21 @@ class DonationController
         $view = new Template();
         echo $view->render('views/success.html');
     }
+
+    function leaderboard()
+    {
+        $sql = "SELECT users.first, users.last, SUM(donations.amount) as total_amount
+                FROM donations
+                JOIN users ON donations.user_id = users.id
+                GROUP BY donations.user_id
+                ORDER BY total_amount DESC";
+        $statement = $this->dbh->prepare($sql);
+        $statement->execute();
+        $leaderboard = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        $this->_f3->set('leaderboard', $leaderboard);
+
+        $view = new Template();
+        echo $view->render('views/leaderboard.html');
+    }
 }

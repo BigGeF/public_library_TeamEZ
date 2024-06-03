@@ -91,7 +91,10 @@ $f3->route("POST /overdue-email", function (){
     $GLOBALS['con']->sendOverdueEmail();
 });
 
-
+// Define a leaderboard route
+$f3->route('GET /leaderboard', function() {
+    $GLOBALS['donateCon']->leaderboard();
+});
 // Run fat free
 $f3->run();
 
