@@ -137,3 +137,21 @@ INSERT INTO `magazines` (`id`, `title`, `description`, `available`, `publishedDa
 (10, 'Fortune', 'Bi-weekly magazine covering business, investing, technology, and management', FALSE, '2024-04-25', '2024-05-05', '2024-05-18', 110, 100, 'https://example.com/covers/fortune.jpg');
 
 
+-- Add new table for donations
+
+CREATE TABLE IF NOT EXISTS `donations` (
+                                           `id` int(3) NOT NULL AUTO_INCREMENT,
+    `user_id` int(3) DEFAULT NULL,
+    `amount` decimal(10,2) NOT NULL,
+    `date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`),
+    FOREIGN KEY (`user_id`) REFERENCES users(`id`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- Optionally, insert sample data for donations
+INSERT INTO `donations` (`id`, `user_id`, `amount`, `date`) VALUES
+                                                                (1, 101, 50.00, '2024-01-01 12:00:00'),
+                                                                (2, 102, 75.50, '2024-02-15 14:30:00'),
+                                                                (3, 103, 20.00, '2024-03-10 10:45:00'),
+                                                                (4, 104, 100.00, '2024-04-05 09:00:00'),
+                                                                (5, 105, 150.00, '2024-05-20 16:20:00');
