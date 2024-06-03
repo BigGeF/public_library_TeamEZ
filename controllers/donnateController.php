@@ -105,6 +105,7 @@ class DonationController
 
     function leaderboard()
     {
+        // 获取捐款数据并按金额排序
         $sql = "SELECT users.first, users.last, SUM(donations.amount) as total_amount
                 FROM donations
                 JOIN users ON donations.user_id = users.id
@@ -114,9 +115,18 @@ class DonationController
         $statement->execute();
         $leaderboard = $statement->fetchAll(PDO::FETCH_ASSOC);
 
+        // 计算排名
+        foreach ($leaderboard as $index => &$donor) {
+            $donor['rank'] = $index + 1;
+        }
+
+        // 将数据保存到 F3 hive
         $this->_f3->set('leaderboard', $leaderboard);
 
+        // 渲染排行榜页面
         $view = new Template();
         echo $view->render('views/leaderboard.html');
     }
+
+
 }

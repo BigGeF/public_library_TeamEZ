@@ -27,7 +27,7 @@
         <tbody>
         <repeat group="{{ @leaderboard }}" value="{{ @donor }}">
             <tr>
-                <td>{{ @index + 1 }}</td>
+                <td>{{ @donor.rank }}</td>
                 <td>{{ @donor.first }} {{ @donor.last }}</td>
                 <td>${{ @donor.total_amount }}</td>
             </tr>
