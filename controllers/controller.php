@@ -348,9 +348,7 @@ class Controller
 
     function addItemToDatabase()
     {
-
-        $item = json_decode($_POST['item']);
-
+        //var_dump($_POST);
 
         // 1. Define the query
         $sql = "INSERT INTO books (title, description, available, publishedDate, borrowedDate, returnDate,
@@ -362,31 +360,27 @@ class Controller
         $statement = $this->dbh->prepare($sql);
 
         // 3. Bind the parameters
-        $title = $item->title == "null" ? null : $item->title;
-        $description = $item->description == "null" ? null : $item->description;
+        $title = $_POST['modal-item-title'] == "null" ? null : $_POST['modal-item-title'];
+        $description = $_POST['modal-item-description'] == "null" ? null : substr($_POST['modal-item-description'], 0, 497).'...';
         $available = 0;
-        $publishedDate = $item->publishedDate == "null" ? null : $item->publishedDate;
+        $publishedDate = $_POST['modal-item-publishedDate'] == "null" ? null : $_POST['modal-item-publishedDate'];
+        // Make sure date is in the correct format
+        if (strlen($publishedDate) == 4){
+            // Add Jan 1st if only year is available
+            $publishedDate .= '-01-01';
+        }else if (strlen($publishedDate) == 7){
+            // Add the 1st if only year and month are available
+            $publishedDate .= '-01';
+        }
         $borrowedDate = date('Y-m-d', time());
         $returnDate = date('Y-m-d', strtotime($borrowedDate . '+14days'));
         $userId = $this->_f3->get("SESSION.userId");
-        $authors = $item->authors ? implode(", ", $item->authors) : null;
-        $pages = $item->pages == "null" ? null : $item->pages;
-        $isbn = $item->isbn == "null" ? null : $item->isbn;
-        $cover = $item->cover == "null" ? null : $item->cover;
+        $authors = $_POST['modal-item-authors'] == "null" ? null : $_POST['modal-item-authors'];
+        $pages = $_POST['modal-item-pages'] == "null" ? null : $_POST['modal-item-pages'];
+        $isbn = $_POST['modal-item-isbn'] == "null" ? null : $_POST['modal-item-isbn'];
+        $cover = $_POST['modal-item-cover'] == "null" ? null : $_POST['modal-item-cover'];
 
-        echo $title . ", " . $description  . ", " . $available  . ", " . $publishedDate  . ", " . $borrowedDate  . ", " . $returnDate  . ", " . $userId  . ", " . $authors  . ", " . $pages  . ", " . $isbn  . ", " . $cover;
-            /*// 3. TEST Bind the parameters
-            $title = "Dune";
-            $description = "Dune description";
-            $available = true;
-            $publishedDate = "1980-12-05";
-            $borrowedDate = "2024-5-28";
-            $returnDate = "2024-6-12";
-            $userId = 101;
-            $authors = "Frank Herbert";
-            $pages = "980";
-            $isbn = "9780593438367";
-            $cover = "http://books.google.com/books/content?id=UAhAEAAAQBAJ&printsec=frontcover&img=1&zoom=1&edge=curl&source=gbs_api";*/
+        //echo $title . ", " . $description  . ", " . $available  . ", " . $publishedDate  . ", " . $borrowedDate  . ", " . $returnDate  . ", " . $userId  . ", " . $authors  . ", " . $pages  . ", " . $isbn  . ", " . $cover;
 
         $statement->bindParam(':title', $title);
         $statement->bindParam(':description', $description);
@@ -405,7 +399,11 @@ class Controller
         try {
             $successful = $statement->execute();
             if ($successful){
-                echo "Success";
+               // echo "Success";
+                $this->_f3->reroute("borrows");
+            }else{
+                //TODO: Make a failure page or just reroute
+                echo "Something went wrong";
             }
         } catch (\PDOException $e) {
             echo "Error: " . $e->getMessage();

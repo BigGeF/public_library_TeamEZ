@@ -26,13 +26,18 @@
                 <div class="search-result-item p-4">
                     <div class="row">
                         <div class="col-auto">
-                            <img src="{{@item.cover}}">
+                            <check if="{{@item.cover != ''}}">
+                                <true><img class="cover-img" src="{{@item.cover}}"></true>
+                                <false><img class="cover-img" src="img/cover-placeholder.jpg"></false>
+                            </check>
+
                         </div>
                         <div class="col">
                             <div class="d-flex flex-column gap-1">
                                 <span class="book-title">{{ @item.title }}</span>
                                 <span>by <span class="book-author">{{@item.author}}</span></span>
                                 <span><span class="book-pages">{{ @item.pages }}</span> pages</span>
+                                <span class="book-published-date">{{date('m-d-Y', strtotime(@item.publishedDate))}}</span>
                             </div>
 
                         </div>

@@ -7,30 +7,7 @@
     File: search.html
  -->
 
-<script>
-    function saveItemClick(action, type) {
-        console.log(action);
-        console.log(type);
 
-        if (confirm("Check out item? It will be due in 2 weeks.")){
-            $.ajax({
-                url:"add-to-database",    //the page containing php script
-                type: "post",    //request type,
-                data: {item: action},
-                success:function(result){
-                    console.log("Result: ", result);
-                    alert('Book has been checked out!');
-                },
-                error: function(xhr, status, error) {
-                    console.error('Error:', error);
-                    alert('Sorry, something went wrong!');
-                }
-            });
-        }
-
-    }
-
-</script>
 <!--Header-->
 <include href="views/header.html" with="title=Search Catalog"></include>
 
@@ -82,10 +59,14 @@
 <!--                <pre>{{var_dump(@result)}}</pre>-->
 
                 <check if="{{get_class(@result) == 'Book'}}">
+
                     <div class="search-result-item p-4">
                         <div class="row">
                             <div class="col-auto">
-                                <img src="{{@result->getCover()}}">
+                                <check if="{{@result->getCover() != ''}}">
+                                    <true><img class="cover-img" src="{{@result->getCover()}}"></true>
+                                    <false><img class="cover-img" src="img/cover-placeholder.jpg"></false>
+                                </check>
                             </div>
                             <div class="col">
                                 <div class="d-flex flex-column gap-1">
@@ -99,6 +80,7 @@
                                         </false>
                                     </check>
                                     <span><span class="book-pages">{{ @result->getPages() }}</span> pages</span>
+                                    <span class="book-published-date">{{date('m-d-Y', strtotime(@result->getPublishedDate()))}}</span>
                                     <span class="book-description">{{ @result->getDescription() }}</span>
                                 </div>
 
@@ -109,8 +91,12 @@
                                     <check if="{{@SESSION.userId}}">
 
                                         <true>
-                                            <button class="btn btn-primary" onclick='saveItemClick(`{{ json_encode(@result) }}`, `Book`)'>Check Out</button>
-                                            <button class="btn btn-danger" disabled>Put On Hold</button>
+                                            <button type="button" class="btn btn-primary"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#addModal"
+                                                    data-book='{{json_encode(@result, JSON_HEX_APOS)}}'>
+                                                Check Out (Modal)
+                                            </button>
                                         </true>
                                         <false>
                                             <a class="btn btn-outline-success" href="login">Login/Sign Up to Check Out</a>
@@ -127,9 +113,10 @@
                 <check if="{{get_class(@result) == 'Magazine'}}">
                     <div class="search-result-item p-4">
                         <div class="row">
-                            <div class="col-auto">
-                                <img src="{{@result->getCover()}}">
-                            </div>
+                            <check if="{{@result->getCover() != ''}}">
+                                <true><img class="cover-img" src="{{@result->getCover()}}"></true>
+                                <false><img class="cover-img" src="img/cover-placeholder.jpg"></false>
+                            </check>
                             <div class="col">
                                 <div class="d-flex flex-column gap-1">
                                     <span class="book-title">{{ @result->getTitle() }}</span>
@@ -152,24 +139,58 @@
     </div>
 
     <!-- Modal -->
-    <div class="modal fade" id="add-to-db-modal" tabindex="-1" aria-labelledby="add-to-db-modal" aria-hidden="true">
-        <div class="modal-dialog">
+    <div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="addModal" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="exampleModalLabel">Saved Book?</h1>
+                    <h1 class="modal-title fs-5">Check Out <span id="modal-header-title"></span>?</span></h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
-                    ...
+                <div class="modal-body m-auto">
+                    <img id="modal-item-cover-preview" src="">
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" >Save Book</button>
+
+                    <form id="save-item-form" method="post" action="add-to-database">
+                        <input type="hidden" name="modal-item-title" id="modal-item-title" value="">
+                        <input type="hidden" name="modal-item-description" id="modal-item-description" value="">
+                        <input type="hidden" name="modal-item-publishedDate" id="modal-item-publishedDate" value="">
+                        <input type="hidden" name="modal-item-authors" id="modal-item-authors" value="">
+                        <input type="hidden" name="modal-item-pages" id="modal-item-pages" value="">
+                        <input type="hidden" name="modal-item-isbn" id="modal-item-isbn" value="">
+                        <input type="hidden" name="modal-item-cover" id="modal-item-cover" value="">
+
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-success">Check Out</button>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
 
+        $('#addModal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget);
+            var book = button.data('book');
+            //console.log(book);
+
+            var modal = $(this);
+            //modal.find('#bookData').val(JSON.stringify(book));
+
+            // Set values of book details. These values will be submitted with POST
+            modal.find('#modal-header-title').text(book.title);
+            modal.find('#modal-item-title').val(book.title);
+            modal.find('#modal-item-description').val(book.description);
+            modal.find('#modal-item-publishedDate').val(book.publishedDate);
+            modal.find('#modal-item-authors').val(book.authors);
+            modal.find('#modal-item-pages').val(book.pages);
+            modal.find('#modal-item-isbn').val(book.isbn);
+            modal.find('#modal-item-cover').val(book.cover);
+            modal.find('#modal-item-cover-preview').attr("src", book.cover);
+        });
+
+    </script>
 </body>
 </html>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
