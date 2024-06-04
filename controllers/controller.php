@@ -14,9 +14,6 @@ class Controller
     {
         $this->_f3 = $f3;
         $this->dbh = Database::getConnection();
-        $this->_f3->set('_itemClicked', function ($item) {
-            return $this->itemClicked($item);
-        });
     }
 
     function home()
@@ -176,8 +173,11 @@ class Controller
 
         if ($id){
             //get all users data
-            $sql = "SELECT * FROM books WHERE user_id = $id";
+            $sql = "SELECT * FROM books WHERE user_id = :user_id";
+
             $statement = $this->dbh->prepare($sql);
+
+            $statement->bindParam(':user_id', $id);
             $statement->execute();
             $items = $statement->fetchAll(PDO::FETCH_ASSOC);
 
@@ -278,9 +278,13 @@ class Controller
         //save the users into f3's "hive"
         $this->_f3->set('users', $users);
 
+        $avail = 0;
+
         //get all books data
-        $sql = "SELECT * FROM books ORDER BY returnDate";
+        $sql = "SELECT * FROM books WHERE available=:available order by returnDate";
+
         $statement = $this->dbh->prepare($sql);
+        $statement->bindParam(':available', $avail, PDO::PARAM_INT);
         $statement->execute();
         $books = $statement->fetchAll(PDO::FETCH_ASSOC);
 
@@ -310,9 +314,11 @@ class Controller
             $itemObjects[] = $bookObj;
         }
 
-        //get all books data
-        $sql = "SELECT * FROM magazines ORDER BY returnDate";
+        //get all magazines data
+        $sql = "SELECT * FROM magazines WHERE available=:available ORDER BY returnDate";
+        $avail = 0;
         $statement = $this->dbh->prepare($sql);
+        $statement->bindParam(':available', $avail, PDO::PARAM_INT);
         $statement->execute();
         $mags = $statement->fetchAll(PDO::FETCH_ASSOC);
 
@@ -409,6 +415,42 @@ class Controller
             echo "Error: " . $e->getMessage();
         }
 
+    }
+
+    function returnItem(){
+        $bookId = $_POST['modal-item-id'];
+        $oldId = $_POST['modal-item-user'];
+        $newId = null;
+        $available = true;
+
+        // 1. Define the query
+        $sql = "UPDATE books SET available=:available, user_id=:new_id WHERE id=:id && user_id=:old_id";
+
+        // 2. Prepare the statement
+        $statement = $this->dbh->prepare($sql);
+
+        $statement->bindParam(':available', $available, PDO::PARAM_INT);
+        $statement->bindParam(':id', $bookId);
+        $statement->bindParam(':new_id', $newId);
+        $statement->bindParam(':old_id', $oldId);
+
+        echo $bookId . " - " . $oldId . " - " . $newId . " - " . $available;
+
+        echo $statement->queryString;
+
+        // 4. Execute the query
+        try {
+            $successful = $statement->execute();
+            if ($successful){
+                // echo "Success";
+                $this->_f3->reroute("borrows");
+            }else{
+                //TODO: Make a failure page or just reroute
+                echo "Something went wrong";
+            }
+        } catch (\PDOException $e) {
+            echo "Error: " . $e->getMessage();
+        }
     }
 
     function sendOverdueEmail(){
