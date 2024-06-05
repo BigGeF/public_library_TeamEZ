@@ -7,13 +7,13 @@ require_once "database.php";
 class Controller
 {
     private $_f3;   // Fat-Free Router
-    private $dbh;
+    private $_dbh;
 
 
     function __construct($f3)
     {
         $this->_f3 = $f3;
-        $this->dbh = Database::getConnection();
+        $this->_dbh = Database::getConnection();
     }
 
     function home()
@@ -72,7 +72,7 @@ class Controller
                 $sql = 'INSERT INTO users (first, last, email, password)
                 VALUES (:first, :last, :email, :password)';
 
-                $statement = $this->dbh->prepare($sql);
+                $statement = $this->_dbh->prepare($sql);
                 $statement->bindParam(':first', $firstName);
                 $statement->bindParam(':last', $lastName);
                 $statement->bindParam(':email', $email);
@@ -80,7 +80,7 @@ class Controller
                 $statement->execute();
 
                 //get the last inserted ID
-                $id = $this->dbh->lastInsertId();
+                $id = $this->_dbh->lastInsertId();
 
                 $this->_f3->set("SESSION.userId", $id);
 
@@ -108,53 +108,10 @@ class Controller
             if (isset($_POST['searchTerm']) && !empty(trim($_POST['searchTerm']))) {
 
                 // Get the search results using curl
-                $items = DataLayer::getSearchResultsCurl($searchTerm, $printType)->items;
+                $items =  $GLOBALS['dataLayer']->getSearchResultsCurl($searchTerm, $printType)->items;
 
-                // Create an array to hold Item objects
-                $itemObjects = array();
-
-                if (sizeof($items) > 0){
-                    // Go through each item from the search results
-                    foreach ($items as $item) {
-
-                        // Set general Item params
-                        $itemParams = array();
-                        $itemParams['id'] = 1;
-                        $itemParams['title'] = $item->volumeInfo->title;
-                        $itemParams['desc'] = $item->volumeInfo->description;
-                        $itemParams['pubDate'] = $item->volumeInfo->publishedDate;
-                        $secondaryParams = array();
-
-                        // Create either a Book object or a Magazine object and add to the itemObject array
-                        if ($item->volumeInfo->printType == "BOOK") {
-                            // Set Book params
-                            $secondaryParams["authors"] = $item->volumeInfo->authors;
-                            $secondaryParams["pages"] = $item->volumeInfo->pageCount;
-                            $secondaryParams["isbn"] = $item->volumeInfo->industryIdentifiers[0]->identifier;
-                            $secondaryParams["cover"] = $item->volumeInfo->imageLinks->thumbnail;
-
-                            // Create a Book from all params
-                            $book = new Book($itemParams, $secondaryParams);
-                            $itemObjects[] = $book;
-
-                        } else if ($item->volumeInfo->printType == "MAGAZINE") {
-                            // Set Magazine params
-                            $secondaryParams["pages"] = $item->volumeInfo->pageCount;
-                            $secondaryParams["cover"] = $item->volumeInfo->imageLinks->thumbnail;
-
-                            // Create a Magazine from all params
-                            $magazine = new Magazine($itemParams, $secondaryParams);
-                            $itemObjects[] = $magazine;
-                        }
-                    }
-                }
-
-
-                /*echo "<pre>";
-                foreach ($itemObjects as $itemObj){
-                    var_dump($itemObj);
-                }
-                echo "</pre>";*/
+                // Create an array of item objects
+                $itemObjects = $GLOBALS['dataLayer']->getItemsAsObjects($items);
 
                 // Set searchResults data
                 $this->_f3->set('searchResults', $itemObjects);
@@ -172,14 +129,8 @@ class Controller
         $id = $this->_f3->get("SESSION.userId");
 
         if ($id){
-            //get all users data
-            $sql = "SELECT * FROM books WHERE user_id = :user_id";
-
-            $statement = $this->dbh->prepare($sql);
-
-            $statement->bindParam(':user_id', $id);
-            $statement->execute();
-            $items = $statement->fetchAll(PDO::FETCH_ASSOC);
+            // Get users borrowed items from database
+            $items = $GLOBALS['dataLayer']->getUserBorrowedItems($id);
 
             //save the users into f3's "hive"
             $this->_f3->set('borrowedItems', $items);
@@ -217,7 +168,7 @@ class Controller
             if (empty($this->_f3->get('errors'))) {
                 // get user information from database
                 $sql = 'SELECT * FROM users WHERE `email`= :email';
-                $statement = $this->dbh->prepare($sql);
+                $statement = $this->_dbh->prepare($sql);
                 $statement->bindParam(':email', $email);
                 $statement->execute();
 
@@ -271,7 +222,7 @@ class Controller
     {
         //get all users data
         $sql = "SELECT * FROM users";
-        $statement = $this->dbh->prepare($sql);
+        $statement = $this->_dbh->prepare($sql);
         $statement->execute();
         $users = $statement->fetchAll(PDO::FETCH_ASSOC);
 
@@ -283,7 +234,7 @@ class Controller
         //get all books data
         $sql = "SELECT * FROM books WHERE available=:available order by returnDate";
 
-        $statement = $this->dbh->prepare($sql);
+        $statement = $this->_dbh->prepare($sql);
         $statement->bindParam(':available', $avail, PDO::PARAM_INT);
         $statement->execute();
         $books = $statement->fetchAll(PDO::FETCH_ASSOC);
@@ -317,7 +268,7 @@ class Controller
         //get all magazines data
         $sql = "SELECT * FROM magazines WHERE available=:available ORDER BY returnDate";
         $avail = 0;
-        $statement = $this->dbh->prepare($sql);
+        $statement = $this->_dbh->prepare($sql);
         $statement->bindParam(':available', $avail, PDO::PARAM_INT);
         $statement->execute();
         $mags = $statement->fetchAll(PDO::FETCH_ASSOC);
@@ -354,136 +305,46 @@ class Controller
 
     function addItemToDatabase()
     {
-        //var_dump($_POST);
+        // Try to add item to the database
+        $addItem = $GLOBALS['dataLayer']->checkoutItem();
 
-        // 1. Define the query
-        $sql = "INSERT INTO books (title, description, available, publishedDate, borrowedDate, returnDate,
-                   user_id, author, pages, isbn, cover) VALUES (:title, :description, :available, :publishedDate,
-                                                                :borrowedDate, :returnDate, :user_id, :authors,
-                                                                :pages, :isbn, :cover)";
-
-        // 2. Prepare the statement
-        $statement = $this->dbh->prepare($sql);
-
-        // 3. Bind the parameters
-        $title = $_POST['modal-item-title'] == "null" ? null : $_POST['modal-item-title'];
-        $description = $_POST['modal-item-description'] == "null" ? null : substr($_POST['modal-item-description'], 0, 497).'...';
-        $available = 0;
-        $publishedDate = $_POST['modal-item-publishedDate'] == "null" ? null : $_POST['modal-item-publishedDate'];
-        // Make sure date is in the correct format
-        if (strlen($publishedDate) == 4){
-            // Add Jan 1st if only year is available
-            $publishedDate .= '-01-01';
-        }else if (strlen($publishedDate) == 7){
-            // Add the 1st if only year and month are available
-            $publishedDate .= '-01';
+        if ($addItem){
+            // Item successfully added to database
+            $this->_f3->reroute("borrows");
+        }else{
+            // Something went wrong
         }
-        $borrowedDate = date('Y-m-d', time());
-        $returnDate = date('Y-m-d', strtotime($borrowedDate . '+14days'));
-        $userId = $this->_f3->get("SESSION.userId");
-        $authors = $_POST['modal-item-authors'] == "null" ? null : $_POST['modal-item-authors'];
-        $pages = $_POST['modal-item-pages'] == "null" ? null : $_POST['modal-item-pages'];
-        $isbn = $_POST['modal-item-isbn'] == "null" ? null : $_POST['modal-item-isbn'];
-        $cover = $_POST['modal-item-cover'] == "null" ? null : $_POST['modal-item-cover'];
-
-        //echo $title . ", " . $description  . ", " . $available  . ", " . $publishedDate  . ", " . $borrowedDate  . ", " . $returnDate  . ", " . $userId  . ", " . $authors  . ", " . $pages  . ", " . $isbn  . ", " . $cover;
-
-        $statement->bindParam(':title', $title);
-        $statement->bindParam(':description', $description);
-        $statement->bindParam(':available', $available);
-        $statement->bindParam(':publishedDate', $publishedDate);
-        $statement->bindParam(':borrowedDate', $borrowedDate);
-        $statement->bindParam(':returnDate', $returnDate);
-        $statement->bindParam(':user_id', $userId);
-        $statement->bindParam(':authors', $authors);
-        $statement->bindParam(':pages', $pages);
-        $statement->bindParam(':isbn', $isbn);
-        $statement->bindParam(':cover', $cover);
-
-
-// 4. Execute the query
-        try {
-            $successful = $statement->execute();
-            if ($successful){
-               // echo "Success";
-                $this->_f3->reroute("borrows");
-            }else{
-                //TODO: Make a failure page or just reroute
-                echo "Something went wrong";
-            }
-        } catch (\PDOException $e) {
-            echo "Error: " . $e->getMessage();
-        }
-
     }
 
     function returnItem(){
         $bookId = $_POST['modal-item-id'];
-        $oldId = $_POST['modal-item-user'];
-        $newId = null;
-        $available = true;
+        $userId = $_POST['modal-item-user'];
 
-        // 1. Define the query
-        $sql = "UPDATE books SET available=:available, user_id=:new_id WHERE id=:id && user_id=:old_id";
+        if ($bookId && $userId){
+            $return = $GLOBALS['dataLayer']->returnItem($bookId, $userId);
 
-        // 2. Prepare the statement
-        $statement = $this->dbh->prepare($sql);
-
-        $statement->bindParam(':available', $available, PDO::PARAM_INT);
-        $statement->bindParam(':id', $bookId);
-        $statement->bindParam(':new_id', $newId);
-        $statement->bindParam(':old_id', $oldId);
-
-        echo $bookId . " - " . $oldId . " - " . $newId . " - " . $available;
-
-        echo $statement->queryString;
-
-        // 4. Execute the query
-        try {
-            $successful = $statement->execute();
-            if ($successful){
-                // echo "Success";
+            if ($return){
                 $this->_f3->reroute("borrows");
             }else{
                 //TODO: Make a failure page or just reroute
                 echo "Something went wrong";
             }
-        } catch (\PDOException $e) {
-            echo "Error: " . $e->getMessage();
         }
     }
 
     function sendOverdueEmail(){
         $overdueUserID = $_POST['overdueId'];
 
-        // get user info from id
-        //get all books data
-        $sql = "SELECT * FROM users WHERE id = $overdueUserID";
-        $statement = $this->dbh->prepare($sql);
-        $statement->execute();
-        $user = $statement->fetch(PDO::FETCH_ASSOC);
+        if ($overdueUserID){
+            $emailSent = $GLOBALS['dataLayer']->sendOverdueEmail($overdueUserID);
 
-        if ($user){
-            $overdueItem = $_POST['overdueItem'];
-
-            $firstName = $user["fName"];
-            $lastName = $user["lName"];
-            $email = $user["email"];
-            $message = "This is just a friendly reminder that " . $overdueItem . " is overdue. Please return the 
-                                                                               item at your earliest convenience.";
-
-            $to = 'miss.matthew@student.greenriver.edu';
-            $subject = 'Contact Form Submission';
-            $body = "First Name: $firstName\nLast Name: $lastName\nEmail: $email\nMessage: $message";
-            $headers = "From: $email";
-
-            if (mail($to, $subject, $body, $headers)) {
-                echo 'Message has been sent';
-            } else {
-                echo 'Failed to send message';
+            //TODO: display message for user
+            if ($emailSent){
+                // Email sent
+            }else{
+                // Email failed
             }
         }
-
     }
 
 }
