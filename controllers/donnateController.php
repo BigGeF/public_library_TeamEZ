@@ -35,7 +35,7 @@ class DonationController
     {
         if (isset($_GET['session_id'])) {
             $sessionId = $_GET['session_id'];
-            DataLayer::handleSuccess($sessionId, $this->_f3);
+            $GLOBALS['dataLayer']->handleSuccess($sessionId, $this->_f3);
         }
 
         $view = new Template();
@@ -44,7 +44,7 @@ class DonationController
 
     function leaderboard()
     {
-        $leaderboard = DataLayer::getLeaderboard();
+        $leaderboard = $GLOBALS['dataLayer']->getLeaderboard();
         $this->_f3->set('leaderboard', $leaderboard);
 
         $view = new Template();
