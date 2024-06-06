@@ -168,15 +168,8 @@ class Controller
             // begin login process if no errors
             // TODO: debug error messages. Login currently works though
             if (empty($this->_f3->get('errors'))) {
-                // get user information from database
-                $sql = 'SELECT * FROM users WHERE `email`= :email';
-                $statement = $this->_dbh->prepare($sql);
-                $statement->bindParam(':email', $email);
-                $statement->execute();
-
-                echo '<script>console.log("statement executed");</script>';
-                // fetch the result
-                if ($row = $statement->fetch(PDO::FETCH_ASSOC)) {
+                // fetch user credentials
+                if ($row = $GLOBALS['dataLayer']->getCredentials($email)) {
                     // assign variables
                     $hash = $row['password'];
                     $id = $row['id'];
@@ -211,7 +204,6 @@ class Controller
         $view = new Template();
         echo $view->render('views/login.html');
     }
-
 
     function logOut()
     {

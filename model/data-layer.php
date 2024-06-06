@@ -387,4 +387,21 @@ class DataLayer
 
         return $itemObjects;
     }
+
+    public function getCredentials($email)
+    {
+        // get user information from database
+        $sql = 'SELECT * FROM users WHERE `email`= :email';
+        $statement = $this->_dbh->prepare($sql);
+        $statement->bindParam(':email', $email);
+        $statement->execute();
+        echo '<script>console.log("statement executed");</script>';
+
+        // return results
+        if ($row = $statement->fetch(PDO::FETCH_ASSOC)) {
+            return $row;
+        } else {
+            return false;
+        }
+    }
 }
