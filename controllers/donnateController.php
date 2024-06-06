@@ -20,7 +20,7 @@ class DonationController
             $success = "https://" . $_SERVER['HTTP_HOST'] . $this->_f3->BASE . "/success?session_id={CHECKOUT_SESSION_ID}";
             $cancel = "https://" . $_SERVER['HTTP_HOST'] . $this->_f3->BASE . "/cancel";
 
-            $sessionUrl = DataLayer::createCheckoutSession($amount, $success, $cancel);
+            $sessionUrl = $GLOBALS['dataLayer']->createCheckoutSession($amount, $success, $cancel);
 
             header("HTTP/1.1 303 See Other");
             header("Location: " . $sessionUrl);

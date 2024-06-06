@@ -269,9 +269,9 @@ class DataLayer
             $userId = $f3->get('SESSION.userId');
             $amount = $session->amount_total / 100;
 
-            $dbh = self::getConnection();
+
             $sql = 'INSERT INTO donations (user_id, amount) VALUES (:user_id, :amount)';
-            $statement = $dbh->prepare($sql);
+            $statement = $this->_dbh->prepare($sql);
             $statement->bindParam(':user_id', $userId);
             $statement->bindParam(':amount', $amount);
 
