@@ -144,6 +144,15 @@ class Controller
     }
 
 
+    /**
+     * Controller function that handles user's login requests
+     *
+     * Validates login form data then compares it to an entry
+     * in our database. Successful login stores: first name,
+     * user ID, and role (administrative access level).
+     *
+     * @return void
+     */
     function logIn()
     {
         // declare variables
@@ -166,7 +175,6 @@ class Controller
             }
 
             // begin login process if no errors
-            // TODO: debug error messages. Login currently works though
             if (empty($this->_f3->get('errors'))) {
                 // fetch user credentials
                 if ($row = $GLOBALS['dataLayer']->getCredentials($email)) {
@@ -175,32 +183,30 @@ class Controller
                     $id = $row['id'];
                     $role = $row['role'];
                     $first = $row['first'];
+
                     // verify credentials
                     if (password_verify($password, $hash)) {
+                        // set user first name
                         $this->_f3->set('SESSION["first"]',$first);
                         // set user id
                         $this->_f3->set('SESSION["userId"]',$id);
                         // set user role
                         $this->_f3->set('SESSION["role"]',$role);
-                        if ($role == 0){
-                            // send user to borrows page
+
+                        if ($role == 0) {
+                            // send users to borrows page
                             $this->_f3->reroute('borrows');
-                        }else{
+                        } else {
                             // send admins to admin page
                             $this->_f3->reroute('admin');
                         }
-
-                    }
-                    else { // user not found
-                        // set error message
-                        $this->_f3->set('errors["login_failure"]', 'Email or password is incorrect');
-                        // reroute to login page
-                        $this->_f3->reroute('login');
                     }
                 }
+                // user not found, set error message
+                $this->_f3->set('errors["email"]', 'Email or password is incorrect');
             }
         }
-        // Render a login page
+        // render the login page
         $view = new Template();
         echo $view->render('views/login.html');
     }

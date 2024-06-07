@@ -30,9 +30,15 @@
         <div class="col-md-6 mx-auto">
             <form action="#" method="post">
                 <div class="mb-3">
+                    <check if="{{ isset(@errors['email']) }}">
+                        <span class="err"> *{{ @errors['email'] }}</span>
+                    </check>
                     <input type="email" class="form-control" placeholder="Email" name="email">
                 </div>
                 <div class="mb-3">
+                    <check if="{{ isset(@errors['password']) }}">
+                        <span class="err"> *{{ @errors['password'] }}</span>
+                    </check>
                     <input type="password" class="form-control" placeholder="Password" name="password">
                 </div>
                 <div class="d-grid gap-2">
