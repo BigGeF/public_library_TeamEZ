@@ -1,4 +1,5 @@
 <?php
+require_once($_SERVER['DOCUMENT_ROOT'].'/../libraryConfig.php');
 
 class DataLayer
 {
@@ -240,8 +241,7 @@ class DataLayer
     // Donation handling methods
     public function createCheckoutSession($amount, $success_url, $cancel_url)
     {
-        \Stripe\Stripe::setApiKey('sk_test_51PKxM2B3EtH8G57ohLIr117P87NYvxjvGNdKuFYYegAaSNupUxeMfPC9TuVv08PxoPXEq7nBKPIM021HjcwNWVj200kmEkQ45z'); // 替换为您的 Stripe 私钥
-
+        \Stripe\Stripe::setApiKey(STRIPE_API_KEY);
         $session = \Stripe\Checkout\Session::create([
             'payment_method_types' => ['card'],
             'line_items' => [[
@@ -264,8 +264,8 @@ class DataLayer
 
     public function handleSuccess($sessionId, $f3)
     {
-        \Stripe\Stripe::setApiKey('sk_test_51PKxM2B3EtH8G57ohLIr117P87NYvxjvGNdKuFYYegAaSNupUxeMfPC9TuVv08PxoPXEq7nBKPIM021HjcwNWVj200kmEkQ45z');
-
+        require_once($_SERVER['DOCUMENT_ROOT'].'/../libraryConfig.php');
+        \Stripe\Stripe::setApiKey(STRIPE_API_KEY);
         $session = \Stripe\Checkout\Session::retrieve($sessionId);
 
         if ($f3->exists('SESSION.userId')) {
