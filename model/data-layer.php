@@ -6,7 +6,7 @@ class DataLayer
 
     public function __construct() {
         // Require my PDO database connection credentials
-        require_once($_SERVER['DOCUMENT_ROOT'].'/../config.php');
+        require_once($_SERVER['DOCUMENT_ROOT'].'/../libraryConfig.php');
 
         try {
             // Instantiate our PDO Database Object
@@ -18,7 +18,9 @@ class DataLayer
             die("<p>Something went wrong!</p>");
         }
     }
-
+    public function getDbh() {
+        return $this->_dbh;
+    }
     // Dummy data for books borrowed
     public static function getMyBorrowsData()
     {
@@ -26,6 +28,7 @@ class DataLayer
         $jsonString = file_get_contents($path);
         return json_decode($jsonString);
     }
+
 
     // Data from Google Books API
     public function getSearchResultsCurl($searchTerm, $printType)
@@ -269,9 +272,9 @@ class DataLayer
             $userId = $f3->get('SESSION.userId');
             $amount = $session->amount_total / 100;
 
-
+            $dbh = $this->getDbh();
             $sql = 'INSERT INTO donations (user_id, amount) VALUES (:user_id, :amount)';
-            $statement = $this->_dbh->prepare($sql);
+            $statement = $dbh->prepare($sql);
             $statement->bindParam(':user_id', $userId);
             $statement->bindParam(':amount', $amount);
 
@@ -388,12 +391,6 @@ class DataLayer
         return $itemObjects;
     }
 
-    /**
-     * Data-Layer function to retrieve user credentials
-     *
-     * @param mixed $email the user's email address
-     * @return false|mixed the users id, role, first, last, email, password
-     */
     public function getCredentials($email)
     {
         // get user information from database
@@ -401,6 +398,7 @@ class DataLayer
         $statement = $this->_dbh->prepare($sql);
         $statement->bindParam(':email', $email);
         $statement->execute();
+        echo '<script>console.log("statement executed");</script>';
 
         // return results
         if ($row = $statement->fetch(PDO::FETCH_ASSOC)) {
@@ -410,29 +408,20 @@ class DataLayer
         }
     }
 
-    /**
-     * Data-Layer function to insert a user into our database
-     *
-     * @param mixed $firstName the user's first name
-     * @param mixed $lastName the user's last name
-     * @param mixed $email the user's email
-     * @param mixed $hash the user's hashed password
-     * @return false|string the last inserted ID
-     */
-    public function createUser($firstName, $lastName, $email, $hash)
+    public function addUser($firstName, $lastName, $email, $passwordHash)
     {
-        // insert user information into database
-        $sql = 'INSERT INTO users (first, last, email, password)
-                VALUES (:first, :last, :email, :password)';
-
+        $sql = 'INSERT INTO users (first, last, email, password) VALUES (:first, :last, :email, :password)';
         $statement = $this->_dbh->prepare($sql);
         $statement->bindParam(':first', $firstName);
         $statement->bindParam(':last', $lastName);
         $statement->bindParam(':email', $email);
-        $statement->bindParam(':password', $hash);
+        $statement->bindParam(':password', $passwordHash);
         $statement->execute();
-
-        //return the last inserted ID
-        return $this->_dbh->lastInsertId() ?: false;
     }
+
+    public function getLastInsertId()
+    {
+        return $this->_dbh->lastInsertId();
+    }
+
 }

@@ -13,14 +13,14 @@ class EmailController
     function contact()
     {
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
-            error_log("Form submitted"); // 调试信息
+            error_log("Form submitted"); // Debug information
 
             $firstName = $_POST['firstName'];
             $lastName = $_POST['lastName'];
             $email = $_POST['email'];
             $message = $_POST['message'];
 
-            // 使用 PHP 内置的 mail 函数发送邮件
+            // Use PHP's built-in mail function to send email
             $to = 'Fan.Hao@student.greenriver.edu';
             $subject = 'Contact Form Submission';
             $body = "First Name: $firstName\nLast Name: $lastName\nEmail: $email\nMessage: $message";

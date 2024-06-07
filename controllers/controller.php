@@ -1,21 +1,17 @@
 <?php
 session_start();
 
-//get the database.php
+require_once "./model/data-layer.php";
 
-require_once "database.php";
 class Controller
 {
-    private $_f3;   // Fat-Free Router
-    private $_dbh;
-
+    private $_f3;        // Fat-Free Router
+    private $_dataLayer; // DataLayer Instance
 
     function __construct($f3)
     {
         $this->_f3 = $f3;
-        // TODO: Remove the dbh from controller once remaining functions using it are moved to dataLayer
-        $this->_dbh = Database::getConnection();
-
+        $this->_dataLayer = new DataLayer(); // 使用 DataLayer 类来管理数据库连接
     }
 
     function home()
@@ -25,62 +21,6 @@ class Controller
         echo $view->render('views/home.html');
     }
 
-    function search()
-    {
-        // If the form has been posted
-        if ($_SERVER['REQUEST_METHOD'] == "POST") {
-
-            // Get the type of book
-            $printType = $_POST['type'];
-
-            // Get User Input Search Term
-            $searchTerm = trim($_POST['searchTerm']);
-            $searchTerm = str_replace(' ', '%20', $searchTerm); // replace spaces with %20 for api search
-            if (isset($_POST['searchTerm']) && !empty(trim($_POST['searchTerm']))) {
-
-                // Get the search results using curl
-                $items =  $GLOBALS['dataLayer']->getSearchResultsCurl($searchTerm, $printType)->items;
-
-                // Create an array of item objects
-                $itemObjects = $GLOBALS['dataLayer']->getItemsAsObjects($items);
-
-                // Set searchResults data
-                $this->_f3->set('searchResults', $itemObjects);
-            }
-        }
-
-        // Render a search page
-        $view = new Template();
-        echo $view->render('views/search.html');
-    }
-
-    function borrows()
-    {
-        // Set myBorrows data
-        $id = $this->_f3->get("SESSION.userId");
-
-        if ($id){
-            // Get users borrowed items from database
-            $items = $GLOBALS['dataLayer']->getUserBorrowedItems($id);
-
-            //save the users into f3's "hive"
-            $this->_f3->set('borrowedItems', $items);
-        }
-
-        // Render a borrows page
-        $view = new Template();
-        echo $view->render('views/borrows.html');
-    }
-
-    /**
-     * Controller function that handles user's sign up requests
-     *
-     * Validates sign up form data and then creates a row
-     * in our database for the user. Successful sign up stores
-     * user ID and then routes them to the search page.
-     *
-     * @return void
-     */
     function signUp()
     {
         // declare variables
@@ -125,13 +65,15 @@ class Controller
 
                 $hash = password_hash($password, PASSWORD_BCRYPT, $options);
 
-                // create user and get the last inserted ID
-                $id =  $GLOBALS['dataLayer']->createUser($firstName, $lastName, $email, $hash);
+                // 调用 DataLayer 方法插入用户信息
+                $this->_dataLayer->addUser($firstName, $lastName, $email, $hash);
 
-                // log the user in
+                // 获取最后插入的ID
+                $id = $this->_dataLayer->getLastInsertId();
+
                 $this->_f3->set("SESSION.userId", $id);
 
-                // send user to search form
+                // send user to login form
                 $this->_f3->reroute('search');
             }
         }
@@ -141,15 +83,53 @@ class Controller
         echo $view->render('views/signUp.html');
     }
 
-    /**
-     * Controller function that handles user's login requests
-     *
-     * Validates login form data then compares it to an entry
-     * in our database. Successful login stores: first name,
-     * user ID, and role (administrative access level).
-     *
-     * @return void
-     */
+    function search()
+    {
+        // If the form has been posted
+        if ($_SERVER['REQUEST_METHOD'] == "POST") {
+
+            // Get the type of book
+            $printType = $_POST['type'];
+
+            // Get User Input Search Term
+            $searchTerm = trim($_POST['searchTerm']);
+            $searchTerm = str_replace(' ', '%20', $searchTerm); // replace spaces with %20 for api search
+            if (isset($_POST['searchTerm']) && !empty(trim($_POST['searchTerm']))) {
+
+                // Get the search results using curl
+                $items = $this->_dataLayer->getSearchResultsCurl($searchTerm, $printType)->items;
+
+                // Create an array of item objects
+                $itemObjects = $this->_dataLayer->getItemsAsObjects($items);
+
+                // Set searchResults data
+                $this->_f3->set('searchResults', $itemObjects);
+            }
+        }
+
+        // Render a search page
+        $view = new Template();
+        echo $view->render('views/search.html');
+    }
+
+    function borrows()
+    {
+        // Set myBorrows data
+        $id = $this->_f3->get("SESSION.userId");
+
+        if ($id){
+            // Get users borrowed items from database
+            $items = $this->_dataLayer->getUserBorrowedItems($id);
+
+            //save the users into f3's "hive"
+            $this->_f3->set('borrowedItems', $items);
+        }
+
+        // Render a borrows page
+        $view = new Template();
+        echo $view->render('views/borrows.html');
+    }
+
     function logIn()
     {
         // declare variables
@@ -174,45 +154,42 @@ class Controller
             // begin login process if no errors
             if (empty($this->_f3->get('errors'))) {
                 // fetch user credentials
-                if ($row = $GLOBALS['dataLayer']->getCredentials($email)) {
+                if ($row = $this->_dataLayer->getCredentials($email)) {
                     // assign variables
                     $hash = $row['password'];
                     $id = $row['id'];
                     $role = $row['role'];
                     $first = $row['first'];
-
                     // verify credentials
                     if (password_verify($password, $hash)) {
-                        // set user first name
                         $this->_f3->set('SESSION["first"]',$first);
                         // set user id
                         $this->_f3->set('SESSION["userId"]',$id);
                         // set user role
                         $this->_f3->set('SESSION["role"]',$role);
-
-                        if ($role == 0) {
-                            // send users to borrows page
+                        if ($role == 0){
+                            // send user to borrows page
                             $this->_f3->reroute('borrows');
-                        } else {
+                        }else{
                             // send admins to admin page
                             $this->_f3->reroute('admin');
                         }
+
+                    }
+                    else { // user not found
+                        // set error message
+                        $this->_f3->set('errors["login_failure"]', 'Email or password is incorrect');
+                        // reroute to login page
+                        $this->_f3->reroute('login');
                     }
                 }
-                // user not found, set error message
-                $this->_f3->set('errors["email"]', 'Email or password is incorrect');
             }
         }
-        // render the login page
+        // Render a login page
         $view = new Template();
         echo $view->render('views/login.html');
     }
 
-    /**
-     * Controller function that handles user's logouts
-     *
-     * @return void
-     */
     function logOut()
     {
         session_destroy();
@@ -222,13 +199,13 @@ class Controller
     //get all users and show at admin.html page
     function adminGetUsers()
     {
-        $users = $GLOBALS['dataLayer']->getUsers();
+        $users = $this->_dataLayer->getUsers();
 
         //save the users into f3's "hive"
         $this->_f3->set('users', $users);
 
         // Get items from database
-        $itemObjects = $GLOBALS['dataLayer']->getAllBorrowedItems();
+        $itemObjects = $this->_dataLayer->getAllBorrowedItems();
 
         //save the users into f3's "hive"
         $this->_f3->set('items', $itemObjects);
@@ -241,7 +218,7 @@ class Controller
     function addItemToDatabase()
     {
         // Try to add item to the database
-        $addItem = $GLOBALS['dataLayer']->checkoutItem();
+        $addItem = $this->_dataLayer->checkoutItem();
 
         if ($addItem){
             // Item successfully added to database
@@ -256,7 +233,7 @@ class Controller
         $userId = $_POST['modal-item-user'];
 
         if ($bookId && $userId){
-            $return = $GLOBALS['dataLayer']->returnItem($bookId, $userId);
+            $return = $this->_dataLayer->returnItem($bookId, $userId);
 
             if ($return){
                 $this->_f3->reroute("borrows");
@@ -270,9 +247,7 @@ class Controller
     function sendOverdueEmail(){
         $overdueUserID = $_POST['overdueId'];
 
-        $GLOBALS['dataLayer']->sendOverdueEmail($overdueUserID);
+        $this->_dataLayer->sendOverdueEmail($overdueUserID);
     }
 
 }
-
-
