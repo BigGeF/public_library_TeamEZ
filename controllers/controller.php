@@ -25,77 +25,6 @@ class Controller
         echo $view->render('views/home.html');
     }
 
-
-    function signUp()
-    {
-        // declare variables
-        $firstName = '';
-        $lastName = '';
-        $email = '';
-        $password = '';
-
-        // signup form posted
-        if ($_SERVER['REQUEST_METHOD'] == "POST") {
-            // validate form data
-            if (Validate::validName($_POST['firstName'])) {
-                $firstName = $_POST['firstName'];
-            } else {
-                $this->_f3->set('errors["firstName"]', 'Invalid first name');
-            }
-
-            if (Validate::validName($_POST['lastName'])) {
-                $lastName = $_POST['lastName'];
-            } else {
-                $this->_f3->set('errors["lastName"]', 'Invalid last name');
-            }
-
-            if (Validate::validPassword($_POST['password'])) {
-                $password = $_POST['password'];
-            } else {
-                $this->_f3->set('errors["password"]', 'Invalid Password');
-            }
-
-            if (Validate::validEmail($_POST['email'])) {
-                $email = $_POST['email'];
-            } else {
-                $this->_f3->set('errors["email"]', 'Please enter a valid email');
-            }
-
-            // if no errors, add user to database
-            if (empty($this->_f3->get('errors'))) {
-                // hash password
-                $options = [
-                    'cost' => 12,
-                ];
-
-                $hash = password_hash($password, PASSWORD_BCRYPT, $options);
-
-                // get user information from database
-                $sql = 'INSERT INTO users (first, last, email, password)
-                VALUES (:first, :last, :email, :password)';
-
-                $statement = $this->_dbh->prepare($sql);
-                $statement->bindParam(':first', $firstName);
-                $statement->bindParam(':last', $lastName);
-                $statement->bindParam(':email', $email);
-                $statement->bindParam(':password', $hash);
-                $statement->execute();
-
-                //get the last inserted ID
-                $id = $this->_dbh->lastInsertId();
-
-                $this->_f3->set("SESSION.userId", $id);
-
-                // send user to login form
-                $this->_f3->reroute('search');
-            }
-        }
-
-        // Render the signUp page
-        $view = new Template();
-        echo $view->render('views/signUp.html');
-    }
-
     function search()
     {
         // If the form has been posted
@@ -143,6 +72,74 @@ class Controller
         echo $view->render('views/borrows.html');
     }
 
+    /**
+     * Controller function that handles user's sign up requests
+     *
+     * Validates sign up form data and then creates a row
+     * in our database for the user. Successful sign up stores
+     * user ID and then routes them to the search page.
+     *
+     * @return void
+     */
+    function signUp()
+    {
+        // declare variables
+        $firstName = '';
+        $lastName = '';
+        $email = '';
+        $password = '';
+
+        // signup form posted
+        if ($_SERVER['REQUEST_METHOD'] == "POST") {
+            // validate form data
+            if (Validate::validName($_POST['firstName'])) {
+                $firstName = $_POST['firstName'];
+            } else {
+                $this->_f3->set('errors["firstName"]', 'Invalid first name');
+            }
+
+            if (Validate::validName($_POST['lastName'])) {
+                $lastName = $_POST['lastName'];
+            } else {
+                $this->_f3->set('errors["lastName"]', 'Invalid last name');
+            }
+
+            if (Validate::validPassword($_POST['password'])) {
+                $password = $_POST['password'];
+            } else {
+                $this->_f3->set('errors["password"]', 'Invalid Password');
+            }
+
+            if (Validate::validEmail($_POST['email'])) {
+                $email = $_POST['email'];
+            } else {
+                $this->_f3->set('errors["email"]', 'Please enter a valid email');
+            }
+
+            // if no errors, add user to database
+            if (empty($this->_f3->get('errors'))) {
+                // hash password
+                $options = [
+                    'cost' => 12,
+                ];
+
+                $hash = password_hash($password, PASSWORD_BCRYPT, $options);
+
+                // create user and get the last inserted ID
+                $id =  $GLOBALS['dataLayer']->createUser($firstName, $lastName, $email, $hash);
+
+                // log the user in
+                $this->_f3->set("SESSION.userId", $id);
+
+                // send user to search form
+                $this->_f3->reroute('search');
+            }
+        }
+
+        // Render the signUp page
+        $view = new Template();
+        echo $view->render('views/signUp.html');
+    }
 
     /**
      * Controller function that handles user's login requests
@@ -211,6 +208,11 @@ class Controller
         echo $view->render('views/login.html');
     }
 
+    /**
+     * Controller function that handles user's logouts
+     *
+     * @return void
+     */
     function logOut()
     {
         session_destroy();

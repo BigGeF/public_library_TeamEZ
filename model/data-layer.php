@@ -388,6 +388,12 @@ class DataLayer
         return $itemObjects;
     }
 
+    /**
+     * Data-Layer function to retrieve user credentials
+     *
+     * @param mixed $email the user's email address
+     * @return false|mixed the users id, role, first, last, email, password
+     */
     public function getCredentials($email)
     {
         // get user information from database
@@ -395,7 +401,6 @@ class DataLayer
         $statement = $this->_dbh->prepare($sql);
         $statement->bindParam(':email', $email);
         $statement->execute();
-        echo '<script>console.log("statement executed");</script>';
 
         // return results
         if ($row = $statement->fetch(PDO::FETCH_ASSOC)) {
@@ -403,5 +408,31 @@ class DataLayer
         } else {
             return false;
         }
+    }
+
+    /**
+     * Data-Layer function to insert a user into our database
+     *
+     * @param mixed $firstName the user's first name
+     * @param mixed $lastName the user's last name
+     * @param mixed $email the user's email
+     * @param mixed $hash the user's hashed password
+     * @return false|string the last inserted ID
+     */
+    public function createUser($firstName, $lastName, $email, $hash)
+    {
+        // insert user information into database
+        $sql = 'INSERT INTO users (first, last, email, password)
+                VALUES (:first, :last, :email, :password)';
+
+        $statement = $this->_dbh->prepare($sql);
+        $statement->bindParam(':first', $firstName);
+        $statement->bindParam(':last', $lastName);
+        $statement->bindParam(':email', $email);
+        $statement->bindParam(':password', $hash);
+        $statement->execute();
+
+        //return the last inserted ID
+        return $this->_dbh->lastInsertId() ?: false;
     }
 }
