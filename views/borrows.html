@@ -7,9 +7,12 @@
     File: borrows.html
  -->
 
+<body>
+
 <!--Header-->
 <include href="views/header.html" with="title=My Borrows"></include>
-<body>
+
+<!--NavBar-->
 <include href="views/navbar.html" with="active=borrows"></include>
 
     <div class="container py-5">
@@ -27,8 +30,8 @@
                     <div class="row">
                         <div class="col-auto">
                             <check if="{{@item.cover != ''}}">
-                                <true><img class="cover-img" src="{{@item.cover}}"></true>
-                                <false><img class="cover-img" src="img/cover-placeholder.jpg"></false>
+                                <true><img class="cover-img" src="{{@item.cover}}" alt="An Image of the Item Cover"></true>
+                                <false><img class="cover-img" src="img/cover-placeholder.jpg" alt="Placeholder image for item with no Cover"></false>
                             </check>
 
                         </div>
@@ -79,7 +82,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body m-auto">
-                    <img id="modal-item-cover-preview" src="">
+                    <img id="modal-item-cover-preview" src="" alt="Image of the items cover">
                 </div>
                 <div class="modal-footer">
 

@@ -7,12 +7,10 @@
     File: search.html
  -->
 
-
-<!--Header-->
-<include href="views/header.html" with="title=Search Catalog"></include>
-
-
 <body>
+    <!--Header-->
+    <include href="views/header.html" with="title=Search Catalog"></include>
+
     <!--Navbar-->
     <include href="views/navbar.html" with="active=search"></include>
 
@@ -62,13 +60,13 @@
 
                     <div class="search-result-item p-4">
                         <div class="row">
-                            <div class="col-auto">
+                            <div class="col-md-auto">
                                 <check if="{{@result->getCover() != ''}}">
                                     <true><img class="cover-img" src="{{@result->getCover()}}"></true>
                                     <false><img class="cover-img" src="img/cover-placeholder.jpg"></false>
                                 </check>
                             </div>
-                            <div class="col">
+                            <div class="col-md">
                                 <div class="d-flex flex-column gap-1">
                                     <span class="book-title">{{ @result->getTitle() }}</span>
                                     <check if ="{{@result->getAuthors()}}">
@@ -85,7 +83,7 @@
                                 </div>
 
                             </div>
-                            <div class="col-auto mt-auto">
+                            <div class="col-md-auto mt-auto">
 
                                 <div class="d-flex flex-column gap-1">
                                     <check if="{{@SESSION.userId}}">
@@ -100,8 +98,6 @@
                                         </true>
                                         <false>
                                             <a class="btn btn-outline-success" href="login">Login/Sign Up to Check Out</a>
-                                            <button class="btn btn-primary" disabled>Check Out</button>
-                                            <button class="btn btn-danger" disabled>Put On Hold</button>
                                         </false>
                                     </check>
                                 </div>
