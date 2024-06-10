@@ -1,6 +1,11 @@
 <?php
 
-
+/**
+ * Class Book
+ *
+ * Represents a book item with authors, pages, ISBN, and cover properties.
+ * This class extends Item and implements JsonSerializable for JSON representation.
+ */
 class Book extends Item implements JsonSerializable
 {
     private $_authors;

@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * Class AudioBook
+ *
+ * Represents an audiobook, extending the Book class with additional properties for length and narrator.
+ */
 class AudioBook extends Book
 {
     private $_length;

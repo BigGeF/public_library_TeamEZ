@@ -1,5 +1,13 @@
 <?php
 
+/**
+ * Class Item
+ *
+ * Represents a general item with properties such as ID, title, description, published date,
+ * availability, borrowed date, return date, borrower, and holds. This class is abstract and
+ * implements JsonSerializable for JSON representation.
+ */
+
 abstract class Item implements JsonSerializable{
     protected $_id;
     protected $_title;

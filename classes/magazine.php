@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * Class Magazine
+ *
+ * Represents a magazine item with properties such as pages and cover image URL.
+ * This class extends Item and implements JsonSerializable for JSON representation.
+ */
 class Magazine extends Item implements JsonSerializable
 {
     private $_pages;

@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * Class User
+ *
+ * Represents a user with properties such as ID, role, first name, last name, email, and borrows.
+ */
 class User
 {
     private $_id;
