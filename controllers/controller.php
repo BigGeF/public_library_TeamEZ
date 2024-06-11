@@ -21,7 +21,7 @@ class Controller
     function __construct($f3)
     {
         $this->_f3 = $f3;
-        $this->_dataLayer = new DataLayer(); // 使用 DataLayer 类来管理数据库连接
+        $this->_dataLayer = new DataLayer();
     }
 
     /**
@@ -81,10 +81,8 @@ class Controller
 
                 $hash = password_hash($password, PASSWORD_BCRYPT, $options);
 
-                // 调用 DataLayer 方法插入用户信息
                 $this->_dataLayer->addUser($firstName, $lastName, $email, $hash);
 
-                // 获取最后插入的ID
                 $id = $this->_dataLayer->getLastInsertId();
 
                 $this->_f3->set("SESSION.userId", $id);
