@@ -191,39 +191,47 @@ class DataLayer
         }
     }
 
-    public function sendOverdueEmail($overdueUserID)
+    public function sendOverdueEmail()
     {
-        // get user info from id
-        //get all books data
-        $sql = "SELECT * FROM users WHERE id=:id";
+
+        $sql = "SELECT books.*, users.* FROM books JOIN users ON books.user_id = users.id WHERE books.returnDate < :today;";
         $statement = $this->_dbh->prepare($sql);
 
-        $statement->bindParam(':id', $overdueUserID);
+        $today = date('Y/m/d');
+        $statement->bindParam(':today', $today);
         $statement->execute();
-        $user = $statement->fetch(PDO::FETCH_ASSOC);
+        $users = $statement->fetchAll(PDO::FETCH_ASSOC);
 
-        if ($user){
-            $overdueItem = $_POST['overdueItem'];
+//        echo "<pre>";
+//        var_dump( $users);
+//        echo "</pre>";
+//
+        $completed = true;
 
-            $firstName = $user["fName"];
-            $lastName = $user["lName"];
-            $email = $user["email"];
-            $message = "This is just a friendly reminder that " . $overdueItem . " is overdue. Please return the 
+        if ($users){
+
+            foreach($users as $user){
+                $overdueItem = $_POST['overdueItem'];
+
+                $firstName = $user["fName"];
+                $lastName = $user["lName"];
+                $email = $user["email"];
+                $message = "This is just a friendly reminder that " . $overdueItem . " is overdue. Please return the 
                                                                                item at your earliest convenience.";
 
-            $to = 'miss.matthew@student.greenriver.edu';
-            $subject = 'Contact Form Submission';
-            $body = "First Name: $firstName\nLast Name: $lastName\nEmail: $email\nMessage: $message";
-            $headers = "From: $email";
+                $to = 'miss.matthew@student.greenriver.edu';
+                $subject = 'Contact Form Submission';
+                $body = "First Name: $firstName\nLast Name: $lastName\nEmail: $email\nMessage: $message";
+                $headers = "From: $email";
 
-            // Send email to user
-            if (mail($to, $subject, $body, $headers)) {
-                return true;
-            } else {
-                return false;
+                // Send email to user
+                if (mail($to, $subject, $body, $headers) == false) {
+                    $completed = false;
+                }
             }
+
         }
-        return false;
+        return $completed;
     }
 
     public static function isOverdue($returnDate)
@@ -328,9 +336,12 @@ class DataLayer
     }
 
     public function getAllBorrowedItems(){
+        $available = false;
+
         //get all books data
-        $sql = "SELECT * FROM books ORDER BY returnDate";
+        $sql = "SELECT * FROM books WHERE available = :available ORDER BY returnDate";
         $statement = $this->_dbh->prepare($sql);
+        $statement->bindParam(':available', $available, PDO::PARAM_INT);
         $statement->execute();
         $books = $statement->fetchAll(PDO::FETCH_ASSOC);
 
@@ -361,8 +372,9 @@ class DataLayer
         }
 
         //get all books data
-        $sql = "SELECT * FROM magazines ORDER BY returnDate";
+        $sql = "SELECT * FROM magazines WHERE available = :available ORDER BY returnDate";
         $statement = $this->_dbh->prepare($sql);
+        $statement->bindParam(':available', $available, PDO::PARAM_INT);
         $statement->execute();
         $mags = $statement->fetchAll(PDO::FETCH_ASSOC);
 
@@ -387,6 +399,9 @@ class DataLayer
             $magObj = new Magazine($itemParams, $secondaryParams);
             $itemObjects[] = $magObj;
         }
+
+        // Sort all items by the returnDate
+        usort($itemObjects, fn($a, $b) => $a->getReturnDate()<=> $b->getReturnDate());
 
         return $itemObjects;
     }
