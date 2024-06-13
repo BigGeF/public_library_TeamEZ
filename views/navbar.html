@@ -55,12 +55,11 @@
             </ul>
         </div>
         <check if="{{@SESSION.userId}}">
-            <true><a class="btn btn-outline-danger" href="logout">Log Out</a></true>
-            <false>   <a class="btn btn-outline-success" href="login">Login</a></false>
+            <true><a class="btn btn-outline-danger btn-logout" href="logout">Log Out</a></true>
+            <false><a class="btn btn-outline-success" href="login">Login</a></false>
         </check>
         <check if="{{@SESSION.role == 1}}">
             <a class="btn btn-outline-success" href="admin">Admin</a>
         </check>
-        {{@SESSION.userId}}
     </div>
 </nav>

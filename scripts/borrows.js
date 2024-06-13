@@ -7,6 +7,8 @@ $('#returnModal').on('show.bs.modal', function (event) {
     let book = button.data('book');
     let id = button.data('user');
     let title = button.data('title');
+    let cover = button.data('cover');
+    console.log(cover);
 
     let modal = $(this);
 
@@ -14,4 +16,5 @@ $('#returnModal').on('show.bs.modal', function (event) {
     modal.find('#modal-header-title').text(title);
     modal.find('#modal-item-id').val(book);
     modal.find('#modal-item-user').val(id);
+    modal.find('#modal-item-cover-preview').attr("src", cover);
 });

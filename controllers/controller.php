@@ -1,8 +1,6 @@
 <?php
 session_start();
 
-require_once "./model/data-layer.php";
-
 /**
  * Class Controller
  *
@@ -18,10 +16,10 @@ class Controller
      *
      * @param $f3 Fat-Free Framework instance.
      */
-    function __construct($f3)
+    function __construct($f3, $dataLayer)
     {
         $this->_f3 = $f3;
-        $this->_dataLayer = new DataLayer();
+        $this->_dataLayer = $dataLayer;
     }
 
     /**
