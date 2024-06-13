@@ -216,7 +216,7 @@ class Controller
                         // set error message
                         $this->_f3->set('errors["login_failure"]', 'Email or password is incorrect');
                         // reroute to login page
-                        $this->_f3->reroute('login');
+                        //$this->_f3->reroute('login');
                     }
                 }
             }

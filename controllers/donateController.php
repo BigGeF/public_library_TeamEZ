@@ -1,18 +1,31 @@
 <?php
-require_once 'vendor/autoload.php';
-require_once "model/data-layer.php";
 
+/**
+ * Class DonationController
+ * Handles donation-related actions and routes.
+ */
 class DonationController
 {
     private $_f3;
     private $_dataLayer;
 
-    public function __construct($f3)
+    /**
+     * DonationController constructor.
+     *
+     * @param object $f3 Fat-Free Framework instance.
+     * @param DataLayer $dataLayer Data layer instance.
+     */
+    public function __construct($f3, $dataLayer)
     {
         $this->_f3 = $f3;
-        $this->_dataLayer = new DataLayer();
+        $this->_dataLayer = $dataLayer;
     }
 
+    /**
+     * Handles donation process.
+     * If the request method is POST, it initiates a Stripe checkout session and redirects to it.
+     * If the request method is GET, it renders the donation form.
+     */
     function donate()
     {
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -33,6 +46,11 @@ class DonationController
         }
     }
 
+    /**
+     * Handles the success of a donation.
+     * If a session ID is provided in the GET parameters, it processes the successful donation.
+     * Renders the success view.
+     */
     function handleSuccess()
     {
         if (isset($_GET['session_id'])) {
@@ -44,6 +62,11 @@ class DonationController
         echo $view->render('views/success.html');
     }
 
+    /**
+     * Displays the donation leaderboard.
+     * Fetches the leaderboard data from the data layer and sets it to the F3 instance.
+     * Renders the leaderboard view.
+     */
     function leaderboard()
     {
         $leaderboard = $this->_dataLayer->getLeaderboard();

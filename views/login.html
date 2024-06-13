@@ -41,6 +41,10 @@
                     </check>
                     <input type="password" class="form-control" placeholder="Password" name="password">
                 </div>
+                <check if="{{ isset(@errors['login_failure']) }}">
+                    <span class="err"> *{{ @errors['login_failure'] }}</span>
+                </check>
+
                 <div class="d-grid gap-2">
                     <button type="submit" class="btn btn-primary">Login</button>
                     <div class="text-center">OR</div>

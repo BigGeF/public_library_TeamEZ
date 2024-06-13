@@ -15,7 +15,7 @@ $f3 = Base::instance();
 $dataLayer = new DataLayer();
 $con = new Controller($f3, $dataLayer);
 $emailCon = new EmailController($f3);
-$donateCon = new DonationController($f3);
+$donateCon = new DonationController($f3, $dataLayer);
 
 
 // Define a default route

@@ -1,10 +1,21 @@
 <?php
 require_once($_SERVER['DOCUMENT_ROOT'].'/../libraryConfig.php');
 
+/**
+ * Class DataLayer
+ * Handles database connections and data operations for the library application.
+ */
 class DataLayer
 {
+    /**
+     * @var PDO $_dbh The database handle.
+     */
     private $_dbh;
 
+    /**
+     * DataLayer constructor.
+     * Initializes the database connection.
+     */
     public function __construct() {
         // Require my PDO database connection credentials
         require_once($_SERVER['DOCUMENT_ROOT'].'/../libraryConfig.php');
@@ -19,19 +30,23 @@ class DataLayer
             die("<p>Something went wrong!</p>");
         }
     }
+
+    /**
+     * Gets the database handle.
+     *
+     * @return PDO The database handle.
+     */
     public function getDbh() {
         return $this->_dbh;
     }
-    // Dummy data for books borrowed
-    public static function getMyBorrowsData()
-    {
-        $path = 'model/testDataBorrows.json';
-        $jsonString = file_get_contents($path);
-        return json_decode($jsonString);
-    }
 
-
-    // Data from Google Books API
+    /**
+     * Retrieves search results from the Google Books API.
+     *
+     * @param string $searchTerm The search term to query.
+     * @param string $printType The type of print (e.g., books, magazines).
+     * @return JSON The decoded JSON response from the API.
+     */
     public function getSearchResultsCurl($searchTerm, $printType)
     {
         $url = "https://www.googleapis.com/books/v1/volumes?q=" . $searchTerm . "&printType=" . $printType;
@@ -45,6 +60,12 @@ class DataLayer
         return json_decode($output);
     }
 
+    /**
+     * Converts API items to objects (Books or Magazines).
+     *
+     * @param array $items The items to convert.
+     * @return array An array of Book or Magazine objects.
+     */
     public function getItemsAsObjects($items)
     {
         // Create an array to hold Item objects
@@ -88,6 +109,12 @@ class DataLayer
         return $itemObjects;
     }
 
+    /**
+     * Retrieves the items borrowed by a specific user.
+     *
+     * @param int $userId The ID of the user.
+     * @return array An array of borrowed items.
+     */
     public function getUserBorrowedItems($userId)
     {
         //get all users data
@@ -101,6 +128,11 @@ class DataLayer
         return $items;
     }
 
+    /**
+     * Checks out an item.
+     *
+     * @return bool True on success, false on failure.
+     */
     public function checkoutItem()
     {
         // 1. Define the query
@@ -161,6 +193,13 @@ class DataLayer
         }
     }
 
+    /**
+     * Returns an item.
+     *
+     * @param int $bookId The ID of the book to return.
+     * @param int $userId The ID of the user returning the book.
+     * @return bool True on success, false on failure.
+     */
     public function returnItem($bookId, $userId)
     {
         $newId = null;
@@ -191,6 +230,11 @@ class DataLayer
         }
     }
 
+    /**
+     * Sends an overdue email to users with overdue items.
+     *
+     * @return bool True if all emails were sent successfully, false otherwise.
+     */
     public function sendOverdueEmail()
     {
 
@@ -202,10 +246,6 @@ class DataLayer
         $statement->execute();
         $users = $statement->fetchAll(PDO::FETCH_ASSOC);
 
-//        echo "<pre>";
-//        var_dump( $users);
-//        echo "</pre>";
-//
         $completed = true;
 
         if ($users){
@@ -234,19 +274,38 @@ class DataLayer
         return $completed;
     }
 
+    /**
+     * Checks if a return date is overdue.
+     *
+     * @param string $returnDate The return date of the item.
+     * @return bool True if the return date is passed todays date, false otherwise.
+     */
     public static function isOverdue($returnDate)
     {
         $date = strtotime($returnDate);
         return ceil(($date - time()) / 60 / 60 / 24) < 0;
     }
 
+    /**
+     * Gets the number of days from the return date.
+     *
+     * @param string $returnDate The return date of the item.
+     * @return int The number of days from the return date.
+     */
     public static function getDaysFromReturnDate($returnDate)
     {
         $date = strtotime($returnDate);
         return abs(ceil(($date - time()) / 60 / 60 / 24)); // Absolute value used so no negatives returned
     }
 
-    // Donation handling methods
+    /**
+     * Creates a Stripe checkout session.
+     *
+     * @param int $amount The amount to be charged.
+     * @param string $success_url The URL to redirect to on success.
+     * @param string $cancel_url The URL to redirect to on cancellation.
+     * @return string The URL of the checkout session.
+     */
     public function createCheckoutSession($amount, $success_url, $cancel_url)
     {
         \Stripe\Stripe::setApiKey(STRIPE_API_KEY);
@@ -270,6 +329,13 @@ class DataLayer
         return $session->url;
     }
 
+    /**
+     * Handles the success of a Stripe checkout session.
+     *
+     * @param string $sessionId The ID of the Stripe session.
+     * @param object $f3 The F3 framework instance.
+     * @throws Exception If the donation cannot be recorded.
+     */
     public function handleSuccess($sessionId, $f3)
     {
         require_once($_SERVER['DOCUMENT_ROOT'].'/../libraryConfig.php');
@@ -306,6 +372,11 @@ class DataLayer
         $f3->set('message', 'Donation successful! Thank you for your contribution.');
     }
 
+    /**
+     * Retrieves the donation leaderboard.
+     *
+     * @return array The leaderboard data.
+     */
     public function getLeaderboard()
     {
         $sql = "SELECT users.first, users.last, SUM(donations.amount) as total_amount
@@ -325,6 +396,11 @@ class DataLayer
         return $leaderboard;
     }
 
+    /**
+     * Retrieves all users.
+     *
+     * @return array An array of user data.
+     */
     public function getUsers()
     {
         //get all users data
@@ -335,6 +411,11 @@ class DataLayer
         return $users;
     }
 
+    /**
+     * Retrieves all borrowed items.
+     *
+     * @return array An array of borrowed items.
+     */
     public function getAllBorrowedItems(){
         $available = false;
 
@@ -406,6 +487,12 @@ class DataLayer
         return $itemObjects;
     }
 
+    /**
+     * Retrieves user credentials based on email.
+     *
+     * @param string $email The email of the user.
+     * @return array|bool The user credentials or false if not found.
+     */
     public function getCredentials($email)
     {
         // get user information from database
@@ -423,6 +510,14 @@ class DataLayer
         }
     }
 
+    /**
+     * Adds a new user to the database.
+     *
+     * @param string $firstName The first name of the user.
+     * @param string $lastName The last name of the user.
+     * @param string $email The email of the user.
+     * @param string $passwordHash The hashed password of the user.
+     */
     public function addUser($firstName, $lastName, $email, $passwordHash)
     {
         $sql = 'INSERT INTO users (first, last, email, password) VALUES (:first, :last, :email, :password)';
@@ -434,6 +529,11 @@ class DataLayer
         $statement->execute();
     }
 
+    /**
+     * Gets the last inserted ID.
+     *
+     * @return string The last inserted ID.
+     */
     public function getLastInsertId()
     {
         return $this->_dbh->lastInsertId();

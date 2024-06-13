@@ -34,21 +34,33 @@
                 <div class="col-md-6">
                     <label for="firstName" class="form-label">First Name</label>
                     <input type="text" class="form-control" name="firstName" id="firstName" required>
+                    <check if="{{ isset(@errors['firstName']) }}">
+                        <span class="err"> *{{ @errors['firstName'] }}</span>
+                    </check>
                 </div>
                 <!-- Last Name -->
                 <div class="col-md-6">
                     <label for="lastName" class="form-label">Last Name</label>
                     <input type="text" class="form-control" name="lastName" id="lastName">
+                    <check if="{{ isset(@errors['firstName']) }}">
+                        <span class="err"> *{{ @errors['firstName'] }}</span>
+                    </check>
                 </div>
                 <!-- Email -->
                 <div class="col-12">
                     <label for="email" class="form-label">Email</label>
                     <input type="email" class="form-control" name="email" id="email" placeholder="you@example.com">
+                    <check if="{{ isset(@errors['firstName']) }}">
+                        <span class="err"> *{{ @errors['firstName'] }}</span>
+                    </check>
                 </div>
                 <!-- Message -->
                 <div class="col-12">
                     <label for="message" class="form-label">Message</label>
                     <textarea class="form-control" name="message" id="message"></textarea>
+                    <check if="{{ isset(@errors['firstName']) }}">
+                        <span class="err"> *{{ @errors['firstName'] }}</span>
+                    </check>
                 </div>
                 <!-- Submit -->
                 <div class="col-12">
